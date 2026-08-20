@@ -29,6 +29,14 @@ export type StudioGatewaySettings = {
   adapterType: StudioGatewayAdapterType;
   profiles?: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>>;
   lastKnownGood?: StudioGatewayConnectionState;
+  /**
+   * Server-side map of gateway URL -> auth token, recorded whenever a patch
+   * carries a URL and token together. Lets the Studio proxy dial the right
+   * token when floors bound to different gateways of the same adapter type
+   * (e.g. a local and a VPS OpenClaw gateway) switch the active URL without
+   * re-sending a token. Never included in sanitized (browser-facing) output.
+   */
+  urlTokens?: Record<string, string>;
 };
 
 export type StudioGatewayAdapterType =
@@ -453,7 +461,7 @@ export const defaultStudioFloorRuntimeState = (
     floorId,
     provider: floor.provider,
     runtimeProfileId: floor.runtimeProfileId,
-    gatewayUrl: null,
+    gatewayUrl: floor.defaultGatewayUrl ?? null,
     status: "disconnected",
     lastKnownGoodAt: null,
     lastErrorCode: null,
@@ -787,13 +795,30 @@ const normalizeGatewaySettings = (value: unknown): StudioGatewaySettings | null 
   const adapterType = normalizeGatewayAdapterType(value.adapterType);
   const profiles = normalizeGatewayProfiles(value.profiles);
   const lastKnownGood = normalizeGatewayConnectionState(value.lastKnownGood);
+  const urlTokens = normalizeGatewayUrlTokens(value.urlTokens);
   return {
     url,
     token,
     adapterType,
     ...(profiles ? { profiles } : {}),
     ...(lastKnownGood ? { lastKnownGood } : {}),
+    ...(urlTokens ? { urlTokens } : {}),
   };
+};
+
+const normalizeGatewayUrlTokens = (
+  value: unknown
+): Record<string, string> | undefined => {
+  if (!isRecord(value)) return undefined;
+  const urlTokens: Record<string, string> = {};
+  for (const [rawUrl, rawToken] of Object.entries(value)) {
+    const url = normalizeGatewayUrl(rawUrl);
+    const token = coerceString(rawToken);
+    if (url && token) {
+      urlTokens[url] = token;
+    }
+  }
+  return Object.keys(urlTokens).length > 0 ? urlTokens : undefined;
 };
 
 const normalizeGatewayProfile = (value: unknown): StudioGatewayProfile | null => {
@@ -854,12 +879,19 @@ const mergeGatewaySettings = (
     current?.lastKnownGood ?? null,
     patch.lastKnownGood
   );
+  // Remember which token belongs to which gateway URL so the proxy can dial
+  // the right token after a URL-only switch (e.g. floor change).
+  const nextUrlTokens: Record<string, string> = { ...(current?.urlTokens ?? {}) };
+  if (nextUrl && nextToken) {
+    nextUrlTokens[nextUrl] = nextToken;
+  }
   return {
     url: nextUrl,
     token: nextToken,
     adapterType: nextAdapterType,
     ...(nextProfiles ? { profiles: nextProfiles } : {}),
     ...(nextLastKnownGood ? { lastKnownGood: nextLastKnownGood } : {}),
+    ...(Object.keys(nextUrlTokens).length > 0 ? { urlTokens: nextUrlTokens } : {}),
   };
 };
 

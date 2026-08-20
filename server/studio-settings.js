@@ -87,7 +87,15 @@ const loadUpstreamGatewaySettings = (env = process.env) => {
   const parsed = readJsonFile(settingsPath);
   const gateway = parsed && typeof parsed === "object" ? parsed.gateway : null;
   const url = typeof gateway?.url === "string" ? gateway.url.trim() : "";
-  const token = typeof gateway?.token === "string" ? gateway.token.trim() : "";
+  // Prefer the token recorded for this exact URL: floors can point at
+  // different gateways of the same adapter type (local vs VPS), and a
+  // floor switch updates the URL without re-sending a token.
+  const urlToken =
+    url && isRecord(gateway?.urlTokens) && typeof gateway.urlTokens[url] === "string"
+      ? gateway.urlTokens[url].trim()
+      : "";
+  const token =
+    urlToken || (typeof gateway?.token === "string" ? gateway.token.trim() : "");
   const adapterType =
     typeof gateway?.adapterType === "string" && gateway.adapterType.trim()
       ? gateway.adapterType.trim()

@@ -10,6 +10,7 @@ export type FloorZone = "building" | "outside";
 export type FloorId =
   | "lobby"
   | "openclaw-ground"
+  | "openclaw-vps"
   | "local-runtime"
   | "claw3d-runtime"
   | "custom-second"
@@ -29,6 +30,11 @@ export type FloorDefinition = {
   enabled: boolean;
   sortOrder: number;
   runtimeProfileId: string | null;
+  /**
+   * Gateway URL this floor should dial when it has no persisted runtime
+   * state yet. Floors without one inherit the adapter profile's URL.
+   */
+  defaultGatewayUrl?: string | null;
 };
 
 export const OFFICE_FLOORS: readonly FloorDefinition[] = [
@@ -45,14 +51,28 @@ export const OFFICE_FLOORS: readonly FloorDefinition[] = [
   },
   {
     id: "openclaw-ground",
-    label: "OpenClaw Floor",
-    shortLabel: "OpenClaw",
+    label: "Local Floor",
+    shortLabel: "Local",
     provider: "openclaw",
     kind: "runtime",
     zone: "building",
     enabled: true,
     sortOrder: 10,
     runtimeProfileId: "openclaw-default",
+    defaultGatewayUrl:
+      process.env.NEXT_PUBLIC_LOCAL_GATEWAY_URL || "ws://localhost:18789",
+  },
+  {
+    id: "openclaw-vps",
+    label: "VPS Floor",
+    shortLabel: "VPS",
+    provider: "openclaw",
+    kind: "runtime",
+    zone: "building",
+    enabled: true,
+    sortOrder: 15,
+    runtimeProfileId: "openclaw-vps",
+    defaultGatewayUrl: process.env.NEXT_PUBLIC_VPS_GATEWAY_URL || null,
   },
   {
     id: "local-runtime",
