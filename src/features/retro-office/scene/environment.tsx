@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, type ReactNode } from "react";
+import { memo, useMemo, type ReactNode } from "react";
 import {
   CANVAS_H,
   CANVAS_W,
@@ -19,6 +19,14 @@ import {
   REMOTE_OFFICE_ZONE,
 } from "@/features/retro-office/core/district";
 import { toWorld } from "@/features/retro-office/core/geometry";
+import {
+  getCarpetTextures,
+  getConcreteTextures,
+  getGrassTextures,
+  getPlasterTextures,
+  getWoodFloorTextures,
+  withRepeat,
+} from "@/features/retro-office/core/proceduralTextures";
 
 function FramedPicture({
   position,
@@ -167,6 +175,92 @@ function OfficeFlagPole({
   );
 }
 
+// One perimeter wall: a solid plaster wall with a thin dark cap trim on top.
+// Roughly 1.7 units tall overall so the walls read taller than agents (~1.0)
+// and tall furniture such as the fridge (~1.4). The x/z footprint still
+// matches the old 1-unit tall box exactly so navigation and tests are
+// unaffected.
+function PerimeterWall({
+  center,
+  length,
+  axis,
+}: {
+  center: [number, number];
+  length: number;
+  axis: "x" | "z";
+}) {
+  const plaster = useMemo(
+    () => withRepeat(getPlasterTextures(), Math.max(2, Math.round(length / 2)), 1),
+    [length],
+  );
+  const thickness = 0.12;
+  const wallHeight = 1.65;
+  const capHeight = 0.05;
+  // Maps (along-wall, height, across-wall) sizes onto world axes.
+  const dims = (
+    along: number,
+    height: number,
+    across: number,
+  ): [number, number, number] =>
+    axis === "x" ? [along, height, across] : [across, height, along];
+
+  return (
+    <group position={[center[0], 0, center[1]]}>
+      <mesh position={[0, wallHeight / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={dims(length, wallHeight, thickness)} />
+        <meshStandardMaterial
+          color="#e9dfd0"
+          map={plaster.map}
+          roughnessMap={plaster.roughnessMap}
+          normalMap={plaster.normalMap}
+          normalScale={[0.5, 0.5]}
+          roughness={0.92}
+          metalness={0.02}
+        />
+      </mesh>
+      <mesh position={[0, wallHeight + capHeight / 2, 0]} castShadow>
+        <boxGeometry args={dims(length, capHeight, thickness)} />
+        <meshStandardMaterial color="#2b2f33" roughness={0.42} metalness={0.68} />
+      </mesh>
+    </group>
+  );
+}
+
+// Layered foliage clumps sitting on top of a planter box: slightly offset
+// flattened spheres in varied greens instead of a flat green slab.
+function PlanterFoliage({
+  position,
+  spread = 1,
+}: {
+  position: [number, number, number];
+  spread?: number;
+}) {
+  const clumps: {
+    offset: [number, number, number];
+    scale: [number, number, number];
+    color: string;
+  }[] = [
+    { offset: [-0.14 * spread, 0, 0.015], scale: [0.13, 0.06, 0.075], color: "#4e7a2f" },
+    { offset: [0.02 * spread, 0.012, -0.02], scale: [0.15, 0.07, 0.085], color: "#5f8f38" },
+    { offset: [0.15 * spread, 0.004, 0.02], scale: [0.12, 0.055, 0.07], color: "#6da345" },
+  ];
+  return (
+    <group position={position}>
+      {clumps.map((clump, index) => (
+        <mesh
+          key={`foliage-${index}`}
+          position={clump.offset}
+          scale={clump.scale}
+          castShadow
+        >
+          <sphereGeometry args={[1, 12, 10]} />
+          <meshStandardMaterial color={clump.color} roughness={0.98} metalness={0} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 export const FloorAndWalls = memo(function FloorAndWalls({
   showRemoteOffice = true,
 }: {
@@ -215,6 +309,14 @@ export const FloorAndWalls = memo(function FloorAndWalls({
   const groundCenterZ = showRemoteOffice ? districtCenterZ : localOfficeCenterZ;
   const groundWidth = showRemoteOffice ? districtWidth : localOfficeWidth;
   const groundHeight = showRemoteOffice ? districtHeight : localOfficeHeight;
+  const woodFloor = useMemo(() => withRepeat(getWoodFloorTextures(), 12, 5), []);
+  const districtConcrete = useMemo(
+    () => withRepeat(getConcreteTextures(), 10, 10),
+    [],
+  );
+  const pathGrass = useMemo(() => withRepeat(getGrassTextures(), 14, 2), []);
+  const pathConcrete = useMemo(() => withRepeat(getConcreteTextures(), 8, 1), []);
+  const gymRubber = useMemo(() => withRepeat(getCarpetTextures(), 6, 4), []);
 
   return (
     <group>
@@ -224,7 +326,15 @@ export const FloorAndWalls = memo(function FloorAndWalls({
         receiveShadow
       >
         <planeGeometry args={[groundWidth, groundHeight, 24, 14]} />
-        <meshStandardMaterial color="#263238" roughness={0.98} metalness={0.02} />
+        <meshStandardMaterial
+          color="#4d565e"
+          map={districtConcrete.map}
+          roughnessMap={districtConcrete.roughnessMap}
+          normalMap={districtConcrete.normalMap}
+          normalScale={[0.6, 0.6]}
+          roughness={0.98}
+          metalness={0.02}
+        />
       </mesh>
 
       <mesh
@@ -233,7 +343,15 @@ export const FloorAndWalls = memo(function FloorAndWalls({
         receiveShadow
       >
         <planeGeometry args={[groundWidth * 0.95, groundHeight * 0.9]} />
-        <meshStandardMaterial color="#1b232a" roughness={0.96} metalness={0.04} />
+        <meshStandardMaterial
+          color="#3d454d"
+          map={districtConcrete.map}
+          roughnessMap={districtConcrete.roughnessMap}
+          normalMap={districtConcrete.normalMap}
+          normalScale={[0.6, 0.6]}
+          roughness={0.96}
+          metalness={0.04}
+        />
       </mesh>
 
       <mesh
@@ -242,7 +360,16 @@ export const FloorAndWalls = memo(function FloorAndWalls({
         receiveShadow
       >
         <planeGeometry args={[localOfficeWidth, localOfficeHeight, 22, 14]} />
-        <meshLambertMaterial color="#c8a97e" />
+        <meshPhysicalMaterial
+          color="#e8d5b8"
+          map={woodFloor.map}
+          roughnessMap={woodFloor.roughnessMap}
+          normalMap={woodFloor.normalMap}
+          normalScale={[0.6, 0.6]}
+          clearcoat={0.2}
+          clearcoatRoughness={0.6}
+          metalness={0.02}
+        />
       </mesh>
 
       {showRemoteOffice ? (
@@ -253,7 +380,16 @@ export const FloorAndWalls = memo(function FloorAndWalls({
             receiveShadow
           >
             <planeGeometry args={[localOfficeWidth, localOfficeHeight, 22, 14]} />
-            <meshLambertMaterial color="#c8a97e" />
+            <meshPhysicalMaterial
+              color="#e8d5b8"
+              map={woodFloor.map}
+              roughnessMap={woodFloor.roughnessMap}
+              normalMap={woodFloor.normalMap}
+              normalScale={[0.6, 0.6]}
+              clearcoat={0.2}
+              clearcoatRoughness={0.6}
+              metalness={0.02}
+            />
           </mesh>
 
           <mesh
@@ -267,7 +403,15 @@ export const FloorAndWalls = memo(function FloorAndWalls({
                 (CITY_PATH_ZONE.maxY - CITY_PATH_ZONE.minY) * SCALE,
               ]}
             />
-            <meshStandardMaterial color="#6d8b5a" roughness={0.96} metalness={0.02} />
+            <meshStandardMaterial
+              color="#9cb87c"
+              map={pathGrass.map}
+              roughnessMap={pathGrass.roughnessMap}
+              normalMap={pathGrass.normalMap}
+              normalScale={[0.7, 0.7]}
+              roughness={0.96}
+              metalness={0.02}
+            />
           </mesh>
 
           <mesh
@@ -281,7 +425,15 @@ export const FloorAndWalls = memo(function FloorAndWalls({
                 (CITY_PATH_ZONE.maxY - CITY_PATH_ZONE.minY) * SCALE * 0.26,
               ]}
             />
-            <meshStandardMaterial color="#c9ae8d" roughness={0.94} metalness={0.02} />
+            <meshStandardMaterial
+              color="#d8c5a6"
+              map={pathConcrete.map}
+              roughnessMap={pathConcrete.roughnessMap}
+              normalMap={pathConcrete.normalMap}
+              normalScale={[0.5, 0.5]}
+              roughness={0.94}
+              metalness={0.02}
+            />
           </mesh>
 
           {Array.from({ length: 8 }).map((_, index) => {
@@ -297,10 +449,11 @@ export const FloorAndWalls = memo(function FloorAndWalls({
           {Array.from({ length: 8 }).map((_, index) => {
             const [wx, , wz] = toWorld(330 + index * 170, 820 + (index % 2 === 0 ? -44 : 44));
             return (
-              <mesh key={`garden-bed-top-${index}`} position={[wx, 0.09, wz]}>
-                <boxGeometry args={[0.48, 0.05, 0.12]} />
-                <meshStandardMaterial color="#7cb342" roughness={0.98} metalness={0} />
-              </mesh>
+              <PlanterFoliage
+                key={`garden-bed-top-${index}`}
+                position={[wx, 0.09, wz]}
+                spread={1.1}
+              />
             );
           })}
 
@@ -348,10 +501,11 @@ export const FloorAndWalls = memo(function FloorAndWalls({
           {Array.from({ length: 4 }).map((_, index) => {
             const [wx, , wz] = toWorld(250 + index * 430, 955);
             return (
-              <mesh key={`city-planter-top-${index}`} position={[wx, 0.18, wz]}>
-                <boxGeometry args={[0.38, 0.08, 0.18]} />
-                <meshStandardMaterial color="#43a047" roughness={0.98} metalness={0} />
-              </mesh>
+              <PlanterFoliage
+                key={`city-planter-top-${index}`}
+                position={[wx, 0.19, wz]}
+                spread={0.85}
+              />
             );
           })}
         </>
@@ -366,9 +520,13 @@ export const FloorAndWalls = memo(function FloorAndWalls({
           >
             <planeGeometry args={[gymZoneFloorWidth, roomZoneFloorHeight]} />
             <meshStandardMaterial
-              color="#24272d"
-              roughness={0.95}
-              metalness={0.05}
+              color="#40464f"
+              map={gymRubber.map}
+              roughnessMap={gymRubber.roughnessMap}
+              normalMap={gymRubber.normalMap}
+              normalScale={[0.5, 0.5]}
+              roughness={0.98}
+              metalness={0.02}
             />
           </mesh>
           {showRemoteOffice ? (
@@ -379,9 +537,13 @@ export const FloorAndWalls = memo(function FloorAndWalls({
             >
               <planeGeometry args={[gymZoneFloorWidth, roomZoneFloorHeight]} />
               <meshStandardMaterial
-                color="#24272d"
-                roughness={0.95}
-                metalness={0.05}
+                color="#40464f"
+                map={gymRubber.map}
+                roughnessMap={gymRubber.roughnessMap}
+                normalMap={gymRubber.normalMap}
+                normalScale={[0.5, 0.5]}
+                roughness={0.98}
+                metalness={0.02}
               />
             </mesh>
           ) : null}
@@ -453,7 +615,13 @@ export const FloorAndWalls = memo(function FloorAndWalls({
                   rotation={[-Math.PI / 2, 0, 0]}
                 >
                   <planeGeometry args={[0.015, qaZoneStripeHeight]} />
-                  <meshBasicMaterial color="#7c3aed" transparent opacity={0.34} />
+                  <meshStandardMaterial
+                    color="#0b0614"
+                    emissive="#7c3aed"
+                    emissiveIntensity={1.6}
+                    transparent
+                    opacity={0.34}
+                  />
                 </mesh>
                 {showRemoteOffice ? (
                   <mesh
@@ -462,7 +630,13 @@ export const FloorAndWalls = memo(function FloorAndWalls({
                     rotation={[-Math.PI / 2, 0, 0]}
                   >
                     <planeGeometry args={[0.015, qaZoneStripeHeight]} />
-                    <meshBasicMaterial color="#7c3aed" transparent opacity={0.34} />
+                    <meshStandardMaterial
+                      color="#0b0614"
+                      emissive="#7c3aed"
+                      emissiveIntensity={1.6}
+                      transparent
+                      opacity={0.34}
+                    />
                   </mesh>
                 ) : null}
               </group>
@@ -481,8 +655,10 @@ export const FloorAndWalls = memo(function FloorAndWalls({
                   rotation={[-Math.PI / 2, 0, 0]}
                 >
                   <planeGeometry args={[qaZoneStripeWidth, 0.012]} />
-                  <meshBasicMaterial
-                    color="#38bdf8"
+                  <meshStandardMaterial
+                    color="#04080d"
+                    emissive="#38bdf8"
+                    emissiveIntensity={1.6}
                     transparent
                     opacity={index % 3 === 0 ? 0.28 : 0.12}
                   />
@@ -494,8 +670,10 @@ export const FloorAndWalls = memo(function FloorAndWalls({
                     rotation={[-Math.PI / 2, 0, 0]}
                   >
                     <planeGeometry args={[qaZoneStripeWidth, 0.012]} />
-                    <meshBasicMaterial
-                      color="#38bdf8"
+                    <meshStandardMaterial
+                      color="#04080d"
+                      emissive="#38bdf8"
+                      emissiveIntensity={1.6}
                       transparent
                       opacity={index % 3 === 0 ? 0.28 : 0.12}
                     />
@@ -507,171 +685,93 @@ export const FloorAndWalls = memo(function FloorAndWalls({
         </>
       ) : null}
 
-      {Array.from({ length: 18 }).map((_, index) => {
-        const z =
-          localOfficeCenterZ - localOfficeHeight / 2 + (index + 1) * (localOfficeHeight / 18);
-        return (
-          <group key={`floor-line-group-${index}`}>
-            <mesh
-              position={[localOfficeCenterX, 0.001, z]}
-              rotation={[-Math.PI / 2, 0, 0]}
-            >
-              <planeGeometry args={[localOfficeWidth, 0.008]} />
-              <meshBasicMaterial color="#a07850" transparent opacity={0.25} />
-            </mesh>
-            {showRemoteOffice ? (
-              <mesh
-                position={[localOfficeCenterX, 0.001, z + remoteOfficeOffsetZ]}
-                rotation={[-Math.PI / 2, 0, 0]}
-              >
-                <planeGeometry args={[localOfficeWidth, 0.008]} />
-                <meshBasicMaterial color="#a07850" transparent opacity={0.25} />
-              </mesh>
-            ) : null}
-          </group>
-        );
-      })}
-
-      {(() => {
-        const wallColor = "#8d6e63";
-        const wallEmissive = "#4e342e";
-
-        return (
-          <>
-            <mesh position={[localOfficeCenterX, 0.5, localNorthWallZ]} receiveShadow>
-              <boxGeometry args={[localOfficeWidth, 1, 0.12]} />
-              <meshStandardMaterial
-                color={wallColor}
-                emissive={wallEmissive}
-                emissiveIntensity={0.4}
-                roughness={0.9}
-              />
-            </mesh>
-            {showRemoteOffice ? (
-              <mesh
-                position={[localOfficeCenterX, 0.5, localNorthWallZ + remoteOfficeOffsetZ]}
-                receiveShadow
-              >
-                <boxGeometry args={[localOfficeWidth, 1, 0.12]} />
-                <meshStandardMaterial
-                  color={wallColor}
-                  emissive={wallEmissive}
-                  emissiveIntensity={0.4}
-                  roughness={0.9}
-                />
-              </mesh>
-            ) : null}
-            <mesh position={[localOfficeCenterX, 0.5, localSouthWallZ]} receiveShadow>
-              <boxGeometry args={[localOfficeWidth, 1, 0.12]} />
-              <meshStandardMaterial
-                color={wallColor}
-                emissive={wallEmissive}
-                emissiveIntensity={0.4}
-                roughness={0.9}
-              />
-            </mesh>
-            {showRemoteOffice ? (
-              <mesh
-                position={[localOfficeCenterX, 0.5, localSouthWallZ + remoteOfficeOffsetZ]}
-                receiveShadow
-              >
-                <boxGeometry args={[localOfficeWidth, 1, 0.12]} />
-                <meshStandardMaterial
-                  color={wallColor}
-                  emissive={wallEmissive}
-                  emissiveIntensity={0.4}
-                  roughness={0.9}
-                />
-              </mesh>
-            ) : null}
-            <mesh position={[localWestWallX, 0.5, localOfficeCenterZ]} receiveShadow>
-              <boxGeometry args={[0.12, 1, localOfficeHeight]} />
-              <meshStandardMaterial
-                color={wallColor}
-                emissive={wallEmissive}
-                emissiveIntensity={0.4}
-                roughness={0.9}
-              />
-            </mesh>
-            {showRemoteOffice ? (
-              <mesh
-                position={[localWestWallX, 0.5, localOfficeCenterZ + remoteOfficeOffsetZ]}
-                receiveShadow
-              >
-                <boxGeometry args={[0.12, 1, localOfficeHeight]} />
-                <meshStandardMaterial
-                  color={wallColor}
-                  emissive={wallEmissive}
-                  emissiveIntensity={0.4}
-                  roughness={0.9}
-                />
-              </mesh>
-            ) : null}
-            <mesh position={[localEastWallX, 0.5, localOfficeCenterZ]} receiveShadow>
-              <boxGeometry args={[0.12, 1, localOfficeHeight]} />
-              <meshStandardMaterial
-                color={wallColor}
-                emissive={wallEmissive}
-                emissiveIntensity={0.4}
-                roughness={0.9}
-              />
-            </mesh>
-            {showRemoteOffice ? (
-              <mesh
-                position={[localEastWallX, 0.5, localOfficeCenterZ + remoteOfficeOffsetZ]}
-                receiveShadow
-              >
-                <boxGeometry args={[0.12, 1, localOfficeHeight]} />
-                <meshStandardMaterial
-                  color={wallColor}
-                  emissive={wallEmissive}
-                  emissiveIntensity={0.4}
-                  roughness={0.9}
-                />
-              </mesh>
-            ) : null}
-          </>
-        );
-      })()}
+      <PerimeterWall
+        center={[localOfficeCenterX, localNorthWallZ]}
+        length={localOfficeWidth}
+        axis="x"
+      />
+      {showRemoteOffice ? (
+        <PerimeterWall
+          center={[localOfficeCenterX, localNorthWallZ + remoteOfficeOffsetZ]}
+          length={localOfficeWidth}
+          axis="x"
+        />
+      ) : null}
+      <PerimeterWall
+        center={[localOfficeCenterX, localSouthWallZ]}
+        length={localOfficeWidth}
+        axis="x"
+      />
+      {showRemoteOffice ? (
+        <PerimeterWall
+          center={[localOfficeCenterX, localSouthWallZ + remoteOfficeOffsetZ]}
+          length={localOfficeWidth}
+          axis="x"
+        />
+      ) : null}
+      <PerimeterWall
+        center={[localWestWallX, localOfficeCenterZ]}
+        length={localOfficeHeight}
+        axis="z"
+      />
+      {showRemoteOffice ? (
+        <PerimeterWall
+          center={[localWestWallX, localOfficeCenterZ + remoteOfficeOffsetZ]}
+          length={localOfficeHeight}
+          axis="z"
+        />
+      ) : null}
+      <PerimeterWall
+        center={[localEastWallX, localOfficeCenterZ]}
+        length={localOfficeHeight}
+        axis="z"
+      />
+      {showRemoteOffice ? (
+        <PerimeterWall
+          center={[localEastWallX, localOfficeCenterZ + remoteOfficeOffsetZ]}
+          length={localOfficeHeight}
+          axis="z"
+        />
+      ) : null}
 
       <mesh position={[localOfficeCenterX, 0.03, localNorthWallZ + 0.04]}>
         <boxGeometry args={[localOfficeWidth, 0.06, 0.04]} />
-        <meshLambertMaterial color="#0c0c10" />
+        <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
       </mesh>
       {showRemoteOffice ? (
         <mesh position={[localOfficeCenterX, 0.03, localNorthWallZ + 0.04 + remoteOfficeOffsetZ]}>
           <boxGeometry args={[localOfficeWidth, 0.06, 0.04]} />
-          <meshLambertMaterial color="#0c0c10" />
+          <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
         </mesh>
       ) : null}
       <mesh position={[localOfficeCenterX, 0.03, localSouthWallZ - 0.04]}>
         <boxGeometry args={[localOfficeWidth, 0.06, 0.04]} />
-        <meshLambertMaterial color="#0c0c10" />
+        <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
       </mesh>
       {showRemoteOffice ? (
         <mesh position={[localOfficeCenterX, 0.03, localSouthWallZ - 0.04 + remoteOfficeOffsetZ]}>
           <boxGeometry args={[localOfficeWidth, 0.06, 0.04]} />
-          <meshLambertMaterial color="#0c0c10" />
+          <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
         </mesh>
       ) : null}
       <mesh position={[localWestWallX + 0.04, 0.03, localOfficeCenterZ]}>
         <boxGeometry args={[0.04, 0.06, localOfficeHeight]} />
-        <meshLambertMaterial color="#0c0c10" />
+        <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
       </mesh>
       {showRemoteOffice ? (
         <mesh position={[localWestWallX + 0.04, 0.03, localOfficeCenterZ + remoteOfficeOffsetZ]}>
           <boxGeometry args={[0.04, 0.06, localOfficeHeight]} />
-          <meshLambertMaterial color="#0c0c10" />
+          <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
         </mesh>
       ) : null}
       <mesh position={[localEastWallX - 0.04, 0.03, localOfficeCenterZ]}>
         <boxGeometry args={[0.04, 0.06, localOfficeHeight]} />
-        <meshLambertMaterial color="#0c0c10" />
+        <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
       </mesh>
       {showRemoteOffice ? (
         <mesh position={[localEastWallX - 0.04, 0.03, localOfficeCenterZ + remoteOfficeOffsetZ]}>
           <boxGeometry args={[0.04, 0.06, localOfficeHeight]} />
-          <meshLambertMaterial color="#0c0c10" />
+          <meshStandardMaterial color="#14151a" roughness={0.85} metalness={0.1} />
         </mesh>
       ) : null}
     </group>

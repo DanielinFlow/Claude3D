@@ -1,4 +1,5 @@
 export const OFFICE_INTERACTION_TARGETS = [
+  "conversation",
   "desk",
   "server_room",
   "meeting_room",
