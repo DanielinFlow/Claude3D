@@ -9,16 +9,16 @@ describe("useRuntimeConnection", () => {
     vi.restoreAllMocks();
   });
 
-  it("selects the hermes provider from the active adapter type", async () => {
+  it("selects the openclaw provider from the active adapter type", async () => {
     vi.doMock("@/lib/gateway/GatewayClient", () => ({
       useGatewayConnection: () => ({
         client: {},
         status: "connected",
         gatewayUrl: "ws://localhost:18789",
         token: "",
-        selectedAdapterType: "hermes",
-        detectedAdapterType: "hermes",
-        activeAdapterType: "hermes",
+        selectedAdapterType: "openclaw",
+        detectedAdapterType: "openclaw",
+        activeAdapterType: "openclaw",
         localGatewayDefaults: null,
         error: null,
         connectPromptReady: true,
@@ -47,8 +47,8 @@ describe("useRuntimeConnection", () => {
 
     render(createElement(Probe));
 
-    expect(screen.getByTestId("providerId")).toHaveTextContent("hermes");
-    expect(screen.getByTestId("providerLabel")).toHaveTextContent("Hermes");
+    expect(screen.getByTestId("providerId")).toHaveTextContent("openclaw");
+    expect(screen.getByTestId("providerLabel")).toHaveTextContent("OpenClaw");
   });
 
   it("selects the custom provider from the active adapter type", async () => {

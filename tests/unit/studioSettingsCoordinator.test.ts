@@ -115,7 +115,7 @@ describe("StudioSettingsCoordinator", () => {
     coordinator.schedulePatch({
       gateway: {
         profiles: {
-          hermes: {
+          custom: {
             url: "ws://localhost:18888",
             token: undefined,
           },
@@ -129,7 +129,7 @@ describe("StudioSettingsCoordinator", () => {
     coordinator.schedulePatch({
       gateway: {
         profiles: {
-          hermes: {
+          custom: {
             token: "new-token",
           },
         },
@@ -145,7 +145,7 @@ describe("StudioSettingsCoordinator", () => {
     expect(updateSettings).toHaveBeenCalledWith({
       gateway: {
         profiles: {
-          hermes: {
+          custom: {
             url: "ws://localhost:18888",
             token: "new-token",
           },

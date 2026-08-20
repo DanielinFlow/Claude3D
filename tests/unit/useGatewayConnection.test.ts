@@ -80,17 +80,17 @@ const setupAndImportHook = async (gatewayUrl: string | null) => {
     }) => {
       gatewayUrl: string;
       token: string;
-      selectedAdapterType: "openclaw" | "hermes" | "demo" | "custom";
-      detectedAdapterType: "openclaw" | "hermes" | "demo" | "custom" | null;
-      activeAdapterType: "openclaw" | "hermes" | "demo" | "custom";
+      selectedAdapterType: "openclaw" | "demo" | "local" | "claw3d" | "custom";
+      detectedAdapterType: "openclaw" | "demo" | "local" | "claw3d" | "custom" | null;
+      activeAdapterType: "openclaw" | "demo" | "local" | "claw3d" | "custom";
       localGatewayDefaults: {
         url: string;
         token: string;
-        adapterType: "openclaw" | "hermes" | "demo" | "custom";
+        adapterType: "openclaw" | "demo" | "local" | "claw3d" | "custom";
       } | null;
       shouldPromptForConnect: boolean;
       useLocalGatewayDefaults: () => void;
-      setSelectedAdapterType: (value: "openclaw" | "hermes" | "demo" | "custom") => void;
+      setSelectedAdapterType: (value: "openclaw" | "demo" | "local" | "claw3d" | "custom") => void;
       connect: () => Promise<void>;
     },
     captured,
@@ -159,11 +159,11 @@ describe("useGatewayConnection", () => {
           gateway: {
             url: "wss://remote.example",
             token: "",
-            adapterType: "hermes",
+            adapterType: "demo",
             lastKnownGood: {
               url: "wss://remote.example",
               token: "",
-              adapterType: "hermes",
+              adapterType: "demo",
             },
           },
           focused: {},
@@ -188,9 +188,12 @@ describe("useGatewayConnection", () => {
 
     render(createElement(Probe));
 
-    await waitFor(() => {
-      expect(captured.url).toBe("ws://localhost:3000/api/gateway/ws");
-    });
+    await waitFor(
+      () => {
+        expect(captured.url).toBe("ws://localhost:3000/api/gateway/ws");
+      },
+      { timeout: 3000 },
+    );
     expect(captured.token).toBe("");
     expect(captured.authScopeKey).toBe("wss://remote.example");
     expect(captured.clientName).toBe("openclaw-control-ui");
@@ -297,7 +300,7 @@ describe("useGatewayConnection", () => {
           gateway: {
             url: "ws://localhost:18789",
             token: "",
-            adapterType: "hermes",
+            adapterType: "claw3d",
           },
           focused: {},
           avatars: {},
@@ -338,21 +341,22 @@ describe("useGatewayConnection", () => {
     expect(captured.url).toBeNull();
   });
 
-  it("uses_a_small_initial_auto_connect_delay_for_hermes_and_demo_only", async () => {
+  it("uses_a_small_initial_auto_connect_delay_for_demo_only", async () => {
     const mod = await import("@/lib/gateway/GatewayClient");
     expect(mod.resolveInitialGatewayAutoConnectDelayMs("openclaw")).toBe(0);
     expect(mod.resolveInitialGatewayAutoConnectDelayMs("custom")).toBe(0);
-    expect(mod.resolveInitialGatewayAutoConnectDelayMs("hermes")).toBe(900);
+    expect(mod.resolveInitialGatewayAutoConnectDelayMs("local")).toBe(0);
+    expect(mod.resolveInitialGatewayAutoConnectDelayMs("claw3d")).toBe(0);
     expect(mod.resolveInitialGatewayAutoConnectDelayMs("demo")).toBe(900);
   });
 
-  it("retries_only_the_first_connect_for_hermes_and_demo", async () => {
+  it("retries_only_the_first_connect_for_demo", async () => {
     const mod = await import("@/lib/gateway/GatewayClient");
     expect(mod.resolveInitialGatewayConnectAttemptCount("openclaw", false)).toBe(1);
     expect(mod.resolveInitialGatewayConnectAttemptCount("custom", false)).toBe(1);
-    expect(mod.resolveInitialGatewayConnectAttemptCount("hermes", false)).toBe(2);
+    expect(mod.resolveInitialGatewayConnectAttemptCount("local", false)).toBe(1);
+    expect(mod.resolveInitialGatewayConnectAttemptCount("claw3d", false)).toBe(1);
     expect(mod.resolveInitialGatewayConnectAttemptCount("demo", false)).toBe(2);
-    expect(mod.resolveInitialGatewayConnectAttemptCount("hermes", true)).toBe(2);
     expect(mod.resolveInitialGatewayConnectAttemptCount("demo", true)).toBe(2);
     expect(mod.resolveInitialGatewayConnectAttemptCount("openclaw", true)).toBe(1);
   });
@@ -365,7 +369,7 @@ describe("useGatewayConnection", () => {
     expect(mod.resolveGatewayClientName("openclaw", "ws://localhost:18789")).toBe(
       "openclaw-control-ui"
     );
-    expect(mod.resolveGatewayClientName("hermes", "ws://localhost:18789")).toBe(
+    expect(mod.resolveGatewayClientName("demo", "wss://pi5.myth-coho.ts.net")).toBe(
       "openclaw-control-ui"
     );
   });
@@ -496,7 +500,7 @@ describe("useGatewayConnection", () => {
           gateway: {
             url: "ws://localhost:18789",
             token: "",
-            adapterType: "hermes",
+            adapterType: "local",
           },
           focused: {},
           avatars: {},
@@ -529,10 +533,10 @@ describe("useGatewayConnection", () => {
     render(createElement(Probe));
 
     await waitFor(() => {
-      expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("hermes");
+      expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("local");
     });
     await waitFor(() => {
-      expect(screen.getByTestId("activeAdapterType")).toHaveTextContent("hermes");
+      expect(screen.getByTestId("activeAdapterType")).toHaveTextContent("local");
     });
     expect(patches).toHaveLength(1);
     const firstPatch = patches[0] as {
@@ -544,11 +548,10 @@ describe("useGatewayConnection", () => {
       };
     };
     expect(firstPatch.gateway?.token).toBeUndefined();
-    expect(firstPatch.gateway?.adapterType).toBe("hermes");
+    expect(firstPatch.gateway?.adapterType).toBe("local");
     expect(firstPatch.gateway?.profiles?.openclaw?.token).toBe("");
-    expect(firstPatch.gateway?.profiles?.hermes?.token).toBeUndefined();
+    expect(firstPatch.gateway?.profiles?.local?.token).toBeUndefined();
     expect(firstPatch.gateway?.profiles?.demo?.token).toBe("");
-    expect(firstPatch.gateway?.profiles?.local?.token).toBe("");
     expect(firstPatch.gateway?.profiles?.claw3d?.token).toBe("");
     expect(firstPatch.gateway?.profiles?.custom?.token).toBe("");
   });
@@ -562,7 +565,7 @@ describe("useGatewayConnection", () => {
           gateway: {
             url: "ws://localhost:18789",
             token: "",
-            adapterType: "hermes",
+            adapterType: "local",
             lastKnownGood: {
               url: "ws://localhost:9999",
               token: "openclaw-token",
@@ -605,7 +608,7 @@ describe("useGatewayConnection", () => {
     await waitFor(() => {
       expect(screen.getByTestId("gatewayUrl")).toHaveTextContent("ws://localhost:18789");
     });
-    expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("hermes");
+    expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("local");
     expect(screen.getByTestId("shouldPromptForConnect")).toHaveTextContent("yes");
     expect(captured.url).toBeNull();
   });
@@ -727,11 +730,11 @@ describe("useGatewayConnection", () => {
           gateway: {
             url: "wss://remote.example",
             token: "",
-            adapterType: "hermes",
+            adapterType: "demo",
             lastKnownGood: {
               url: "wss://remote.example",
               token: "",
-              adapterType: "hermes",
+              adapterType: "demo",
             },
           },
           focused: {},
@@ -774,7 +777,7 @@ describe("useGatewayConnection", () => {
 
     render(createElement(Probe));
     await waitFor(() => {
-      expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("hermes");
+      expect(screen.getByTestId("selectedAdapterType")).toHaveTextContent("demo");
     });
     fireEvent.click(screen.getByTestId("connect"));
 
@@ -811,9 +814,9 @@ describe("useGatewayConnection", () => {
           gateway: {
             url: "ws://localhost:18789",
             token: "",
-            adapterType: "hermes",
+            adapterType: "demo",
             profiles: {
-              hermes: { url: "ws://localhost:18789", token: "" },
+              demo: { url: "ws://localhost:18789", token: "" },
               custom: { url: "http://127.0.0.1:7770", token: "" },
             },
           },

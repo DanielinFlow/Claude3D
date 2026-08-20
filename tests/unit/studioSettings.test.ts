@@ -207,7 +207,16 @@ describe("studio settings normalization", () => {
         floorId: "openclaw-ground",
         provider: "openclaw",
         runtimeProfileId: "openclaw-default",
-        gatewayUrl: null,
+        gatewayUrl: process.env.NEXT_PUBLIC_LOCAL_GATEWAY_URL || "ws://localhost:18789",
+        status: "disconnected",
+      }),
+    );
+    expect(normalized.officeFloors["openclaw-vps"]).toEqual(
+      expect.objectContaining({
+        floorId: "openclaw-vps",
+        provider: "openclaw",
+        runtimeProfileId: "openclaw-vps",
+        gatewayUrl: process.env.NEXT_PUBLIC_VPS_GATEWAY_URL || null,
         status: "disconnected",
       }),
     );
@@ -216,8 +225,8 @@ describe("studio settings normalization", () => {
   it("normalizes and merges per-floor runtime state", () => {
     const normalized = normalizeStudioSettings({
       officeFloors: {
-        "hermes-first": {
-          runtimeProfileId: " hermes-pi ",
+        "custom-second": {
+          runtimeProfileId: " custom-pi ",
           gatewayUrl: " ws://127.0.0.1:18789 ",
           status: "connected",
           lastKnownGoodAt: 1234,
@@ -227,11 +236,11 @@ describe("studio settings normalization", () => {
       },
     });
 
-    expect(normalized.officeFloors["hermes-first"]).toEqual(
+    expect(normalized.officeFloors["custom-second"]).toEqual(
       expect.objectContaining({
-        floorId: "hermes-first",
-        provider: "hermes",
-        runtimeProfileId: "hermes-pi",
+        floorId: "custom-second",
+        provider: "custom",
+        runtimeProfileId: "custom-pi",
         gatewayUrl: "ws://localhost:18789",
         status: "connected",
         lastKnownGoodAt: 1234,
@@ -242,7 +251,7 @@ describe("studio settings normalization", () => {
 
     const merged = mergeStudioSettings(normalized, {
       officeFloors: {
-        "hermes-first": {
+        "custom-second": {
           status: "error",
           lastErrorCode: "connect_timeout",
           lastErrorMessage: "Timed out connecting",
@@ -250,9 +259,9 @@ describe("studio settings normalization", () => {
       },
     });
 
-    expect(merged.officeFloors["hermes-first"]).toEqual(
+    expect(merged.officeFloors["custom-second"]).toEqual(
       expect.objectContaining({
-        runtimeProfileId: "hermes-pi",
+        runtimeProfileId: "custom-pi",
         gatewayUrl: "ws://localhost:18789",
         status: "error",
         lastErrorCode: "connect_timeout",
@@ -271,9 +280,9 @@ describe("studio settings normalization", () => {
 
   it("normalizes and merges active floor selection", () => {
     const normalized = normalizeStudioSettings({
-      activeFloorId: "hermes-first",
+      activeFloorId: "custom-second",
     });
-    expect(resolveStudioActiveFloorId(normalized)).toBe("hermes-first");
+    expect(resolveStudioActiveFloorId(normalized)).toBe("custom-second");
 
     const merged = mergeStudioSettings(normalized, {
       activeFloorId: "training",
@@ -396,7 +405,7 @@ describe("studio settings normalization", () => {
         gateway: {
           url: "ws://localhost:28789",
           token: "",
-          adapterType: "hermes",
+          adapterType: "local",
           profiles: {
             openclaw: { url: "ws://localhost:18789", token: "open-token" },
             demo: { url: "ws://localhost:38789", token: "" },
@@ -406,7 +415,7 @@ describe("studio settings normalization", () => {
       localDefaults: null,
     });
 
-    expect(resolved.selectedAdapterType).toBe("hermes");
+    expect(resolved.selectedAdapterType).toBe("local");
     expect(resolved.activeProfile).toEqual({
       url: "ws://localhost:28789",
       token: "",
@@ -414,7 +423,7 @@ describe("studio settings normalization", () => {
     expect(resolved.profiles).toEqual(
       expect.objectContaining({
         openclaw: { url: "ws://localhost:18789", token: "open-token" },
-        hermes: { url: "ws://localhost:28789", token: "" },
+        local: { url: "ws://localhost:28789", token: "" },
         demo: { url: "ws://localhost:38789", token: "" },
       }),
     );

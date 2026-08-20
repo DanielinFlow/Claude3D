@@ -1118,7 +1118,7 @@ describe("AgentSettingsPanel", () => {
     expect(screen.getByText("Heartbeat automation controls are coming soon.")).toBeInTheDocument();
   });
 
-  it("hides_heartbeat_coming_soon_for_hermes", () => {
+  it("hides_heartbeat_coming_soon_for_demo", () => {
     render(
       createElement(AgentSettingsPanel, {
         agent: createAgent(),
@@ -1134,7 +1134,7 @@ describe("AgentSettingsPanel", () => {
         cronDeleteBusyJobId: null,
         onRunCronJob: vi.fn(),
         onDeleteCronJob: vi.fn(),
-        adapterType: "hermes",
+        adapterType: "demo",
       })
     );
 
@@ -1165,7 +1165,7 @@ describe("AgentSettingsPanel", () => {
     expect(screen.getByRole("button", { name: "Open Full Control UI" })).toBeDisabled();
   });
 
-  it("hides_control_ui_section_for_hermes", () => {
+  it("hides_control_ui_section_for_demo", () => {
     render(
       createElement(AgentSettingsPanel, {
         agent: createAgent(),
@@ -1181,7 +1181,7 @@ describe("AgentSettingsPanel", () => {
         cronDeleteBusyJobId: null,
         onRunCronJob: vi.fn(),
         onDeleteCronJob: vi.fn(),
-        adapterType: "hermes",
+        adapterType: "demo",
       })
     );
 
@@ -1189,7 +1189,7 @@ describe("AgentSettingsPanel", () => {
     expect(screen.queryByRole("button", { name: "Open Full Control UI" })).not.toBeInTheDocument();
   });
 
-  it("keeps_delete_agent_action_for_hermes_in_advanced_mode", () => {
+  it("keeps_delete_agent_action_for_demo_in_advanced_mode", () => {
     render(
       createElement(AgentSettingsPanel, {
         agent: createAgent(),
@@ -1205,7 +1205,7 @@ describe("AgentSettingsPanel", () => {
         cronDeleteBusyJobId: null,
         onRunCronJob: vi.fn(),
         onDeleteCronJob: vi.fn(),
-        adapterType: "hermes",
+        adapterType: "demo",
       })
     );
 

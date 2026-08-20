@@ -15,7 +15,6 @@ import {
   resolveRuntimeContext,
   shouldRunCustomChecks,
   shouldRunDemoChecks,
-  shouldRunHermesChecks,
   shouldRunOpenClawChecks,
   summarizeChecks,
 } from "../../scripts/lib/claw3doctor-core.mjs";
@@ -25,11 +24,11 @@ describe("claw3doctor core", () => {
     const runtime = resolveRuntimeContext({
       settings: {
         gateway: {
-          adapterType: "hermes",
+          adapterType: "demo",
           url: "ws://localhost:18790",
           token: "",
           profiles: {
-            hermes: { url: "ws://localhost:18790", token: "" },
+            demo: { url: "ws://localhost:18790", token: "" },
             openclaw: { url: "ws://localhost:18789", token: "file-token" },
           },
         },
@@ -43,7 +42,7 @@ describe("claw3doctor core", () => {
     });
 
     expect(runtime).toMatchObject({
-      adapterType: "hermes",
+      adapterType: "demo",
       gatewayUrl: "ws://localhost:18790",
       tokenConfigured: false,
     });
@@ -143,8 +142,8 @@ describe("claw3doctor core", () => {
         runtimeContext: {
           profiles: {
             openclaw: { url: "ws://localhost:18789", token: "a" },
-            hermes: { url: "ws://localhost:18789", token: "" },
-            demo: { url: "ws://localhost:28789", token: "" },
+            demo: { url: "ws://localhost:18789", token: "" },
+            local: { url: "ws://localhost:28789", token: "" },
           },
         },
       }),
@@ -240,9 +239,9 @@ describe("claw3doctor core", () => {
 
   it("enables provider-specific checks based on runtime and local state", () => {
     expect(
-      shouldRunHermesChecks({
-        runtimeContext: { adapterType: "hermes" },
-        env: process.env,
+      shouldRunDemoChecks({
+        runtimeContext: { adapterType: "openclaw" },
+        env: { ...process.env, DEMO_ADAPTER_PORT: "19444" },
       }),
     ).toBe(true);
     expect(
@@ -285,7 +284,7 @@ describe("claw3doctor core", () => {
     const report = buildDoctorJsonReport({
       summary: DOCTOR_STATUSES.warn,
       runtimeContext: {
-        adapterType: "hermes",
+        adapterType: "demo",
         gatewayUrl: "ws://localhost:18789",
         token: "",
         tokenConfigured: false,
@@ -308,7 +307,7 @@ describe("claw3doctor core", () => {
       doctor: "claw3doctor",
       summary: DOCTOR_STATUSES.warn,
       runtimeContext: {
-        adapterType: "hermes",
+        adapterType: "demo",
       },
       checks: [{ label: "Gateway token" }],
     });
@@ -318,12 +317,12 @@ describe("claw3doctor core", () => {
     const report = formatDoctorReport({
       summary: DOCTOR_STATUSES.warn,
       runtimeContext: {
-        adapterType: "hermes",
+        adapterType: "demo",
         gatewayUrl: "ws://localhost:18789",
         token: "",
         tokenConfigured: false,
         profiles: {
-          hermes: { url: "ws://localhost:18789", token: "" },
+          demo: { url: "ws://localhost:18789", token: "" },
           openclaw: { url: "ws://localhost:28789", token: "secret" },
         },
       },
@@ -370,8 +369,8 @@ describe("parseDoctorArgs", () => {
   });
 
   it("sets profile to lower-cased value", () => {
-    expect(parseDoctorArgs(["--profile", "Hermes"])).toMatchObject({
-      profile: "hermes",
+    expect(parseDoctorArgs(["--profile", "Demo"])).toMatchObject({
+      profile: "demo",
       allProfiles: false,
     });
   });
@@ -410,17 +409,17 @@ describe("adapterInScope scoping semantics", () => {
     const inScope = makeAdapterInScope({ allProfiles: false, profile: null });
     expect(inScope("openclaw", true)).toBe(true);
     expect(inScope("openclaw", false)).toBe(false);
-    expect(inScope("hermes", false)).toBe(false);
+    expect(inScope("demo", false)).toBe(false);
   });
 
-  it("--profile hermes: only hermes is in scope", () => {
+  it("--profile demo: only demo is in scope", () => {
     const inScope = makeAdapterInScope({
       allProfiles: false,
-      profile: "hermes",
+      profile: "demo",
     });
-    expect(inScope("hermes", false)).toBe(true);
+    expect(inScope("demo", false)).toBe(true);
     expect(inScope("openclaw", true)).toBe(false); // openclaw would default to true but is suppressed
-    expect(inScope("demo", true)).toBe(false);
+    expect(inScope("local", true)).toBe(false);
     expect(inScope("custom", false, ["local", "claw3d"])).toBe(false);
   });
 
@@ -430,12 +429,12 @@ describe("adapterInScope scoping semantics", () => {
       profile: "openclaw",
     });
     expect(inScope("openclaw", false)).toBe(true);
-    expect(inScope("hermes", true)).toBe(false);
+    expect(inScope("demo", true)).toBe(false);
   });
 
   it("--all-profiles: every adapter is in scope regardless of default", () => {
     const inScope = makeAdapterInScope({ allProfiles: true, profile: null });
-    expect(inScope("hermes", false)).toBe(true);
+    expect(inScope("local", false)).toBe(true);
     expect(inScope("openclaw", false)).toBe(true);
     expect(inScope("demo", false)).toBe(true);
     expect(inScope("custom", false)).toBe(true);

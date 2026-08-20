@@ -40,8 +40,8 @@ describe("floorRoster", () => {
   it("builds a roster cache for all floors", () => {
     const cache = createFloorRosterCache();
     expect(cache.lobby).toEqual(defaultFloorRosterState("lobby"));
-    expect(cache["hermes-first"]).toEqual(
-      expect.objectContaining({ floorId: "hermes-first", provider: "hermes" }),
+    expect(cache["custom-second"]).toEqual(
+      expect.objectContaining({ floorId: "custom-second", provider: "custom" }),
     );
   });
 
@@ -94,22 +94,22 @@ describe("floorRoster", () => {
 
   it("hydrates roster state through a runtime-neutral entry point", async () => {
     const state = await hydrateFloorRoster({
-      floorId: "hermes-first",
+      floorId: "custom-second",
       now: () => 456,
       hydrate: async () => ({
-        seeds: [makeSeed({ identityName: null, sessionDisplayName: "Hermes Prime" })],
+        seeds: [makeSeed({ identityName: null, sessionDisplayName: "Custom Prime" })],
         suggestedSelectedAgentId: "agent-1",
       }),
     });
 
     expect(state).toEqual(
       expect.objectContaining({
-        floorId: "hermes-first",
-        provider: "hermes",
+        floorId: "custom-second",
+        provider: "custom",
         status: "loaded",
         hydratedAt: 456,
       }),
     );
-    expect(state.entries[0]?.displayName).toBe("Hermes Prime");
+    expect(state.entries[0]?.displayName).toBe("Custom Prime");
   });
 });

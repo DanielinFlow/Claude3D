@@ -81,9 +81,9 @@ describe("useOfficeFloorRuntimePersistence", () => {
     await act(() => vi.runAllTimersAsync());
     updateSettings.mockClear();
 
-    // User navigates to Hermes floor — gatewayUrl and status have NOT changed.
+    // User navigates to Custom floor — gatewayUrl and status have NOT changed.
     rerender({
-      activeFloorId: "hermes-first" as const,
+      activeFloorId: "custom-second" as const,
       gatewayUrl: "ws://openclaw:18789",
       status: "connected" as const,
       gatewayError: null,
@@ -115,10 +115,10 @@ describe("useOfficeFloorRuntimePersistence", () => {
     await act(() => vi.runAllTimersAsync());
     updateSettings.mockClear();
 
-    // User switches to Hermes floor and then connects to the Hermes gateway.
+    // User switches to Custom floor and then connects to the Custom gateway.
     rerender({
-      activeFloorId: "hermes-first" as const,
-      gatewayUrl: "ws://hermes:7770",
+      activeFloorId: "custom-second" as const,
+      gatewayUrl: "ws://custom:7770",
       status: "connecting" as const,
       gatewayError: null,
       settingsCoordinator: coordinator,
@@ -126,12 +126,12 @@ describe("useOfficeFloorRuntimePersistence", () => {
 
     await act(() => vi.runAllTimersAsync());
 
-    // The patch should target hermes-first, not openclaw-ground.
+    // The patch should target custom-second, not openclaw-ground.
     expect(updateSettings).toHaveBeenCalledTimes(1);
     expect(updateSettings).toHaveBeenCalledWith(
       expect.objectContaining({
         officeFloors: expect.objectContaining({
-          "hermes-first": expect.objectContaining({ status: "connecting" }),
+          "custom-second": expect.objectContaining({ status: "connecting" }),
         }),
       }),
     );
@@ -165,7 +165,7 @@ describe("useOfficeFloorRuntimePersistence", () => {
 
     // User switches floors while the connection is still in flight.
     rerender({
-      activeFloorId: "hermes-first" as const,
+      activeFloorId: "custom-second" as const,
       gatewayUrl: "ws://openclaw:18789",
       status: "connecting" as const,
       gatewayError: null,
@@ -174,7 +174,7 @@ describe("useOfficeFloorRuntimePersistence", () => {
 
     // Connection attempt fails — status + error update, but URL is unchanged.
     rerender({
-      activeFloorId: "hermes-first" as const,
+      activeFloorId: "custom-second" as const,
       gatewayUrl: "ws://openclaw:18789",
       status: "disconnected" as const,
       gatewayError: "ECONNREFUSED",
@@ -183,7 +183,7 @@ describe("useOfficeFloorRuntimePersistence", () => {
 
     await act(() => vi.runAllTimersAsync());
 
-    // Error must be stamped on openclaw-ground (which owns the URL), not hermes-first.
+    // Error must be stamped on openclaw-ground (which owns the URL), not custom-second.
     expect(updateSettings).toHaveBeenCalledWith(
       expect.objectContaining({
         officeFloors: expect.objectContaining({
@@ -197,7 +197,7 @@ describe("useOfficeFloorRuntimePersistence", () => {
     expect(updateSettings).not.toHaveBeenCalledWith(
       expect.objectContaining({
         officeFloors: expect.objectContaining({
-          "hermes-first": expect.anything(),
+          "custom-second": expect.anything(),
         }),
       }),
     );
