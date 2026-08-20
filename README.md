@@ -1,3 +1,14 @@
+# InTheFlow Office — A 3D Workspace for AI Agents
+
+> Fork of [Claw3D](https://github.com/iamlukethedev/Claw3D) (MIT) with the
+> visual/audio/conversation polish from
+> [Hermes3D](https://github.com/iamlukethedev/Hermes3D) ported in, the Hermes
+> runtime removed (Claude via OpenClaw only), and a two-floor setup: a
+> **Local** floor bound to the desktop OpenClaw Gateway and a **VPS** floor
+> bound to a remote gateway over Tailscale.
+> Setup: [`docs/intheflow-office-setup.md`](docs/intheflow-office-setup.md).
+> The upstream Claw3D README follows below.
+
 # Claw3D — A 3D Workspace for AI Agents
 
 <p align="center">
