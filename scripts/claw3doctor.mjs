@@ -19,7 +19,6 @@ import {
   isCustomRuntimeAdapter,
   shouldRunCustomChecks,
   shouldRunDemoChecks,
-  shouldRunHermesChecks,
   shouldRunOpenClawChecks,
   summarizeChecks,
 } from "./lib/claw3doctor-core.mjs";
@@ -204,21 +203,6 @@ const detectWorkspaceState = () => {
   }
 };
 
-const detectHermesModelHealth = async () => {
-  const apiUrl = (
-    trim(process.env.HERMES_API_URL) || "http://localhost:8642"
-  ).replace(/\/$/, "");
-  const apiKey = trim(process.env.HERMES_API_KEY);
-  const model = trim(process.env.HERMES_MODEL) || "hermes";
-  const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : {};
-  const result = await probeHttpJson({ url: `${apiUrl}/v1/models`, headers });
-  return {
-    apiUrl,
-    model,
-    apiKeyConfigured: Boolean(apiKey),
-    probe: result,
-  };
-};
 
 const probeCustomRuntimeHealth = async (runtimeUrl) => {
   const baseUrl = runtimeUrl.replace(/\/$/, "");
@@ -348,7 +332,7 @@ async function main() {
   for (const warning of buildProfileWarnings({ runtimeContext })) {
     checks.push(
       checkWarn("Runtime profiles", "Profile collision", warning, [
-        "Assign distinct local ports or URLs if you want OpenClaw, Hermes, and demo running simultaneously instead of swapping one backend onto the same endpoint.",
+        "Assign distinct local ports or URLs if you want OpenClaw and demo running simultaneously instead of swapping one backend onto the same endpoint.",
       ]),
     );
   }
@@ -517,65 +501,6 @@ async function main() {
         ],
       ),
     );
-  }
-
-  if (
-    adapterInScope("hermes", shouldRunHermesChecks({ runtimeContext, env }))
-  ) {
-    const hermes = await detectHermesModelHealth();
-    checks.push(
-      checkPass(
-        "Hermes",
-        "Hermes adapter config",
-        `Hermes API target ${hermes.apiUrl} | model ${hermes.model} | key ${
-          hermes.apiKeyConfigured ? "configured" : "missing"
-        }`,
-      ),
-    );
-
-    if (hermes.probe.ok) {
-      const models = Array.isArray(hermes.probe.json?.data)
-        ? hermes.probe.json.data.map((entry) => trim(entry?.id)).filter(Boolean)
-        : [];
-      checks.push(
-        checkPass(
-          "Hermes",
-          "Hermes API",
-          models.length > 0
-            ? `Hermes API reachable. Reported models: ${models.join(", ")}`
-            : "Hermes API reachable.",
-        ),
-      );
-      if (models.length > 0 && !models.includes(hermes.model)) {
-        checks.push(
-          checkWarn(
-            "Hermes",
-            "Hermes model",
-            `Configured model "${hermes.model}" was not returned by /v1/models.`,
-            [
-              "Set HERMES_MODEL to one of the reported model ids or update the Hermes API configuration.",
-            ],
-          ),
-        );
-      }
-    } else if (hermes.probe.status === 401) {
-      checks.push(
-        checkFail("Hermes", "Hermes API", "Hermes API returned HTTP 401.", [
-          "Verify HERMES_API_KEY and confirm the adapter is loading the same .env values you expect.",
-        ]),
-      );
-    } else {
-      checks.push(
-        checkFail(
-          "Hermes",
-          "Hermes API",
-          hermes.probe.text || "Hermes API probe failed.",
-          [
-            "Start the Hermes API server and verify /v1/models responds before starting the adapter.",
-          ],
-        ),
-      );
-    }
   }
 
   const summary = summarizeChecks(checks);

@@ -367,7 +367,7 @@ export type GatewayResponseFrame = {
 export type GatewayHelloOk = {
   type: "hello-ok";
   protocol: number;
-  adapterType?: "openclaw" | "hermes" | "demo" | "custom";
+  adapterType?: "openclaw" | "demo" | "custom";
   features?: { methods?: string[]; events?: string[] };
   snapshot?: unknown;
   auth?: {

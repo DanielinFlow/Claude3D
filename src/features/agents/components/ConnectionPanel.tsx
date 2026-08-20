@@ -39,16 +39,12 @@ export const ConnectionPanel = ({
   const isConnected = status === "connected";
   const isConnecting = status === "connecting";
   const tokenOptional =
-    selectedAdapterType === "hermes" ||
     selectedAdapterType === "demo" ||
     selectedAdapterType === "local" ||
     selectedAdapterType === "claw3d" ||
     selectedAdapterType === "custom";
   const applyDemoPreset = () => {
     onAdapterTypeChange("demo");
-  };
-  const applyHermesPreset = () => {
-    onAdapterTypeChange("hermes");
   };
   const applyCustomPreset = () => {
     onAdapterTypeChange("custom");
@@ -65,8 +61,7 @@ export const ConnectionPanel = ({
   const selectedAdapterHint =
     selectedAdapterType === "openclaw"
       ? "OpenClaw owns provider/model routing behind the gateway."
-      : selectedAdapterType === "hermes"
-        ? "Hermes owns provider/account routing behind the gateway."
+
         : selectedAdapterType === "demo"
           ? "Demo can seed a local main agent or connect to the mock gateway."
           : selectedAdapterType === "claw3d"
@@ -146,13 +141,6 @@ export const ConnectionPanel = ({
           onClick={applyDemoPreset}
         >
           Demo backend
-        </button>
-        <button
-          className="ui-btn-secondary px-3 py-1.5 text-[11px] font-semibold tracking-[0.05em]"
-          type="button"
-          onClick={applyHermesPreset}
-        >
-          Hermes backend
         </button>
         <button
           className="ui-btn-secondary px-3 py-1.5 text-[11px] font-semibold tracking-[0.05em]"

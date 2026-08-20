@@ -33,14 +33,12 @@ export type StudioGatewaySettings = {
 
 export type StudioGatewayAdapterType =
   | "openclaw"
-  | "hermes"
   | "demo"
   | "local"
   | "claw3d"
   | "custom";
 export const STUDIO_GATEWAY_ADAPTER_TYPES = [
   "openclaw",
-  "hermes",
   "demo",
   "local",
   "claw3d",
@@ -813,7 +811,6 @@ const normalizeGatewayProfiles = (
   const profiles: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> = {};
   for (const adapterType of [
     "openclaw",
-    "hermes",
     "demo",
     "local",
     "claw3d",
@@ -880,7 +877,6 @@ const mergeGatewayProfiles = (
   };
   for (const adapterType of [
     "openclaw",
-    "hermes",
     "demo",
     "local",
     "claw3d",
@@ -937,7 +933,6 @@ const normalizeGatewayAdapterType = (
   const adapterType = coerceString(value).toLowerCase();
   if (
     adapterType === "demo" ||
-    adapterType === "hermes" ||
     adapterType === "openclaw" ||
     adapterType === "local" ||
     adapterType === "claw3d" ||
@@ -974,7 +969,6 @@ export const resolveDefaultStudioGatewayProfile = (
       return { url: DEFAULT_LOCAL_RUNTIME_URL, token: "" };
     case "custom":
       return { url: DEFAULT_CUSTOM_RUNTIME_URL, token: "" };
-    case "hermes":
     case "demo":
       return { url: DEFAULT_LOCAL_ADAPTER_GATEWAY_URL, token: "" };
     case "openclaw":

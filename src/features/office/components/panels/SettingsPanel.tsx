@@ -86,7 +86,6 @@ export function SettingsPanel({
   const gatewayDisconnectDisabled = !isGatewayConnected;
   const gatewayConnectDisabled = normalizedGatewayUrl.length === 0;
   const tokenOptional =
-    selectedAdapterType === "hermes" ||
     selectedAdapterType === "demo" ||
     selectedAdapterType === "local" ||
     selectedAdapterType === "claw3d" ||
@@ -136,7 +135,6 @@ export function SettingsPanel({
           {(
             [
               ["demo", "Demo"],
-              ["hermes", "Hermes"],
               ["local", "Local"],
               ["claw3d", "Claw3D"],
               ["custom", "Custom"],

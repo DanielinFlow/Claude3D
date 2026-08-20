@@ -6,7 +6,6 @@ export const DOCTOR_STATUSES = {
 
 const VALID_ADAPTER_TYPES = new Set([
   "openclaw",
-  "hermes",
   "demo",
   "local",
   "claw3d",
@@ -16,7 +15,6 @@ const TUNNEL_HOST_PATTERN =
   /(cloudflare|trycloudflare|ngrok|tailscale|tunnel)/i;
 const DEFAULT_GATEWAY_URL_BY_ADAPTER = {
   openclaw: "ws://localhost:18789",
-  hermes: "ws://localhost:18789",
   demo: "ws://localhost:18789",
   local: "http://localhost:7770",
   claw3d: "http://localhost:3000/api/runtime/custom",
@@ -435,12 +433,6 @@ export const summarizeChecks = (checks) => {
   if (hasWarn) return DOCTOR_STATUSES.warn;
   return DOCTOR_STATUSES.pass;
 };
-
-export const shouldRunHermesChecks = ({ runtimeContext, env = process.env }) =>
-  runtimeContext.adapterType === "hermes" ||
-  Boolean(
-    trimString(env.HERMES_API_URL) || trimString(env.HERMES_ADAPTER_PORT),
-  );
 
 export const shouldRunOpenClawChecks = ({
   runtimeContext,

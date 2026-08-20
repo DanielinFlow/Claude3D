@@ -125,7 +125,7 @@ const OPENCLAW_CONTROL_UI_CLIENT_ID = "openclaw-control-ui";
 const OPENCLAW_WEBCHAT_UI_CLIENT_ID = "webchat-ui";
 
 const isAutoManagedAdapter = (adapterType: StudioGatewayAdapterType) =>
-  adapterType === "openclaw" || adapterType === "hermes" || adapterType === "demo";
+  adapterType === "openclaw" || adapterType === "demo";
 
 export const resolveGatewayClientName = (
   adapterType: StudioGatewayAdapterType,
@@ -143,7 +143,6 @@ export const resolveInitialGatewayAutoConnectDelayMs = (
   adapterType: StudioGatewayAdapterType
 ): number => {
   switch (adapterType) {
-    case "hermes":
     case "demo":
       return INITIAL_AUTO_CONNECT_DELAY_MS;
     default:
@@ -156,7 +155,6 @@ export const resolveInitialGatewayConnectAttemptCount = (
   hasConnectedOnce: boolean
 ): number => {
   switch (adapterType) {
-    case "hermes":
     case "demo":
       return 2;
     default:
@@ -183,7 +181,6 @@ const normalizeLocalGatewayDefaults = (value: unknown): StudioGatewaySettings | 
   const token = typeof raw.token === "string" ? raw.token.trim() : "";
   const adapterType =
     raw.adapterType === "demo" ||
-    raw.adapterType === "hermes" ||
     raw.adapterType === "openclaw" ||
     raw.adapterType === "local" ||
     raw.adapterType === "claw3d" ||
@@ -210,7 +207,7 @@ const normalizeGatewayProfilesPublic = (
   if (!value || typeof value !== "object") return undefined;
   const raw = value as Partial<Record<StudioGatewayAdapterType, StudioGatewayProfilePublic>>;
   const profiles: Partial<Record<StudioGatewayAdapterType, { url: string; token: string }>> = {};
-  for (const adapterType of ["openclaw", "hermes", "demo", "local", "claw3d", "custom"] as const) {
+  for (const adapterType of ["openclaw", "demo", "local", "claw3d", "custom"] as const) {
     const profile = normalizeGatewayProfilePublic(raw[adapterType]);
     if (profile) {
       profiles[adapterType] = profile;
@@ -531,7 +528,7 @@ const doctorFixHint =
   "Run `npx openclaw doctor --fix` on the gateway host (or `pnpm openclaw doctor --fix` in a source checkout).";
 
 const protocolMismatchHint =
-  "This gateway looks too old for Claw3D's protocol v3. Upgrade OpenClaw, use the Hermes adapter, or run `npm run demo-gateway` for a no-framework office demo.";
+  "This gateway looks too old for Claw3D's protocol v3. Upgrade OpenClaw, or run `npm run demo-gateway` for a no-framework office demo.";
 
 const tailscaleGatewayHint =
   "If this is a remote OpenClaw/Tailscale gateway, confirm the Studio host can reach the `wss://...` address and approve the first device pairing on the gateway host with `openclaw devices approve --latest`.";
@@ -797,9 +794,9 @@ export const useGatewayConnection = (
         const nextGatewayUrl = selectedProfile.url ?? "";
         const nextToken = selectedProfile.token ?? "";
         // Patch Hermes Phase 2: allow auto-connect for auto-managed adapters
-        // (hermes/openclaw/demo) when a persisted URL exists, even if
+        // (openclaw/demo) when a persisted URL exists, even if
         // gateway.lastKnownGood.adapterType doesn't match the currently
-        // selected adapter. Without this, switching to Hermes never
+        // selected adapter. Without this, switching adapters never
         // auto-connects because lastKnownGood is still "openclaw".
         const hasPersistedProfileForSelected =
           Boolean(resolvedGatewayProfiles.lastKnownGoodForSelected?.url) ||
@@ -962,7 +959,6 @@ export const useGatewayConnection = (
       const hello = client.getLastHello();
       const nextDetectedAdapterType =
         hello?.adapterType === "demo" ||
-        hello?.adapterType === "hermes" ||
         hello?.adapterType === "openclaw" ||
         hello?.adapterType === "custom"
           ? hello.adapterType

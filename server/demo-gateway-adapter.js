@@ -510,7 +510,7 @@ function startAdapter() {
 
   httpServer.listen(ADAPTER_PORT, "127.0.0.1", () => {
     console.log(`[demo-gateway] Listening on ws://localhost:${ADAPTER_PORT}`);
-    console.log("[demo-gateway] No OpenClaw or Hermes required.");
+    console.log("[demo-gateway] No OpenClaw required.");
   });
 }
 
