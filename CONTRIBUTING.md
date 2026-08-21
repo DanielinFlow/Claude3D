@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Claw3D.
+Thanks for helping improve Claude3D.
 
 Please use GitHub Issues for bugs, feature requests, and questions about planned work.
 
@@ -14,7 +14,7 @@ Please use GitHub Issues for bugs, feature requests, and questions about planned
 ## Local setup
 ```bash
 git clone https://github.com/iamlukethedev/Claw3D.git
-cd Claw3D
+cd Claude3D
 npm install
 cp .env.example .env
 npm run dev

@@ -308,7 +308,7 @@ async function main() {
           "Runtime profiles",
           "Runtime profile",
           "No runtime profile / gateway URL is configured.",
-          ["Set the gateway URL in Claw3D connect/settings before retrying."],
+          ["Set the gateway URL in Claude3D connect/settings before retrying."],
         ),
   );
 
@@ -324,7 +324,7 @@ async function main() {
           "Gateway token",
           "No gateway token is configured for the selected profile.",
           [
-            "If this backend requires token auth, set the upstream token in Claw3D settings or openclaw.json.",
+            "If this backend requires token auth, set the upstream token in Claude3D settings or openclaw.json.",
           ],
         ),
   );

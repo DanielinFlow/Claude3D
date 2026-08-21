@@ -1,10 +1,10 @@
-# Claw3Doctor Spec
+# Claude3Doctor Spec
 
-> First-pass diagnostics plan for Claw3D deployments so users stop chasing the same setup failures manually.
+> First-pass diagnostics plan for Claude3D deployments so users stop chasing the same setup failures manually.
 
 ## Goal
 
-Provide a single diagnostics surface for the common "Claw3D cannot connect"
+Provide a single diagnostics surface for the common "Claude3D cannot connect"
 or "runtime support looks broken" cases.
 
 The intent is similar to:
@@ -12,7 +12,7 @@ The intent is similar to:
 - `openclaw doctor`
 - `hermes doctor`
 
-but focused on Claw3D's integration points across providers.
+but focused on Claude3D's integration points across providers.
 
 ## Primary Outcomes
 
@@ -26,7 +26,7 @@ but focused on Claw3D's integration points across providers.
 
 ## First-Pass Scope
 
-### Claw3D Settings / Environment
+### Claude3D Settings / Environment
 
 Checks:
 
@@ -48,7 +48,7 @@ Checks:
 
 - can the configured gateway URL be reached?
 - can Studio proxy the selected gateway?
-- does the endpoint respond like a Claw3D-compatible gateway?
+- does the endpoint respond like a Claude3D-compatible gateway?
 
 Outputs:
 
@@ -128,7 +128,7 @@ Outputs:
 Example:
 
 ```text
-Claw3Doctor: WARN
+Claude3Doctor: WARN
 
 [pass] Runtime profile: OpenClaw Default
 [pass] Gateway URL reachable: ws://localhost:18789

@@ -293,7 +293,7 @@ export const buildGatewayFailureActions = ({
 
   if (normalized.includes("econnrefused") || normalized.includes("timed out")) {
     actions.push(
-      "Verify the backend is actually listening on the configured host and port before retrying from Claw3D.",
+      "Verify the backend is actually listening on the configured host and port before retrying from Claude3D.",
     );
   }
 
@@ -469,7 +469,7 @@ export const formatDoctorReport = ({
   }
   const lines = [];
   lines.push("==================================================");
-  lines.push(`Claw3Doctor ${formatStatusBadge(summary)}`);
+  lines.push(`Claude3Doctor ${formatStatusBadge(summary)}`);
   lines.push("==================================================");
   lines.push("");
   lines.push(`Runtime provider: ${runtimeContext.adapterType}`);

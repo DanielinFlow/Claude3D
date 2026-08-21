@@ -304,7 +304,7 @@ export const triggerHeartbeatNow = async (
   const resolvedAgentId = resolveHeartbeatAgentId(agentId);
   return client.call<HeartbeatWakeResult>("wake", {
     mode: "now",
-    text: `Claw3D heartbeat trigger (${resolvedAgentId}).`,
+    text: `Claude3D heartbeat trigger (${resolvedAgentId}).`,
   });
 };
 

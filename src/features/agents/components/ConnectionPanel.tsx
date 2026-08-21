@@ -65,7 +65,7 @@ export const ConnectionPanel = ({
         : selectedAdapterType === "demo"
           ? "Demo can seed a local main agent or connect to the mock gateway."
           : selectedAdapterType === "claw3d"
-            ? "Claw3D runtime keeps Claw3D transcript semantics over direct HTTP."
+            ? "Claude3D runtime keeps Claude3D transcript semantics over direct HTTP."
             : selectedAdapterType === "local"
               ? "Local runtime expects a direct orchestrator boundary."
               : "Custom is a generic runtime endpoint, not a provider-native adapter.";
@@ -154,7 +154,7 @@ export const ConnectionPanel = ({
           type="button"
           onClick={applyClaw3dPreset}
         >
-          Claw3D runtime
+          Claude3D runtime
         </button>
         <button
           className="ui-btn-secondary px-3 py-1.5 text-[11px] font-semibold tracking-[0.05em]"

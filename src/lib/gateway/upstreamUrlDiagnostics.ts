@@ -1,7 +1,7 @@
 /**
  * Static checks for the upstream gateway URL a user types into the connect UI.
  *
- * Claw3D speaks the OpenClaw gateway protocol: the client opens a socket,
+ * Claude3D speaks the OpenClaw gateway protocol: the client opens a socket,
  * sends a `connect` frame, and waits for `hello-ok`. A URL that can never
  * succeed — like TLS against a port Tailscale serves as plain HTTP — turns
  * into a 13s connect timeout with no explanation. Catching it here turns

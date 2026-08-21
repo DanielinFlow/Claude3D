@@ -39,7 +39,7 @@ This release converges the runtime-profiles, office-systems, claw3doctor, and se
 ### Docs
 
 - Replaced top-level `MULTI_AGENT_BETA.md` and `ROADMAP.md` with stubs that point to canonical docs under `docs/`, and added a runtime profiles reference from `README.md`.
-- Expanded `README.md` to describe `Local` and `Claw3D` runtime modes and persistent backend profile configuration, including the additional `local` and `claw3d` values for `CLAW3D_GATEWAY_ADAPTER_TYPE`.
+- Expanded `README.md` to describe `Local` and `Claude3D` runtime modes and persistent backend profile configuration, including the additional `local` and `claw3d` values for `CLAW3D_GATEWAY_ADAPTER_TYPE`.
 
 ### Notes
 
@@ -50,7 +50,7 @@ This release converges the runtime-profiles, office-systems, claw3doctor, and se
 
 Remote Offices, Skills Marketplace, and Company Builder.
 
-This release expands Claw3D from a single-office viewer into a more complete AI workplace, with guided setup, richer agent operations, remote office support, and stronger security hardening.
+This release expands Claude3D from a single-office viewer into a more complete AI workplace, with guided setup, richer agent operations, remote office support, and stronger security hardening.
 
 ### Added
 
@@ -76,7 +76,7 @@ This release expands Claw3D from a single-office viewer into a more complete AI 
 
 ### Docs
 
-- Added an Agent Bus integration guide for visualizing AI sessions in Claw3D.
+- Added an Agent Bus integration guide for visualizing AI sessions in Claude3D.
 - Refreshed the public roadmap.
 
 ### Notes
@@ -123,7 +123,7 @@ This release expands Claw3D from a single-office viewer into a more complete AI 
 
 ### Added
 
-- Initial public Claw3D project documentation, including `README.md`, `VISION.md`, and `ARCHITECTURE.md`.
+- Initial public Claude3D project documentation, including `README.md`, `VISION.md`, and `ARCHITECTURE.md`.
 - A gateway-first web UI for connecting to OpenClaw agents, monitoring runtime activity, and managing agent workflows.
 - A retro-office 3D environment for visualizing agent activity, spatial interactions, and immersive operational surfaces.
 - An office builder flow for editing and publishing office layouts.

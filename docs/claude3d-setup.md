@@ -1,6 +1,6 @@
-# InTheFlow Office — Setup
+# Claude3D — Setup
 
-A 3D virtual office for Claude-powered agents. Built on the Claw3D base
+A 3D virtual office for Claude-powered agents. Built on the Claude3D base
 (OpenClaw runtime provider, multi-floor architecture) with the Hermes3D
 visual/audio/conversation polish ported in. There is no Hermes runtime in
 this build: agents connect through OpenClaw gateways only.
@@ -52,12 +52,12 @@ command handles both:
 
 It reuses whatever is already running (gateway, app), installs dependencies on
 first run, picks another port if 3000 is taken, waits until the office answers,
-and opens the browser. Logs land in `/tmp/intheflow-office-logs/`.
+and opens the browser. Logs land in `/tmp/claude3d-logs/`.
 
 Handy as an alias:
 
 ```bash
-echo 'alias office="$HOME/random/intheflow-office/scripts/start-office.sh"' >> ~/.bashrc
+echo 'alias office="$HOME/Claude3D/scripts/start-office.sh"' >> ~/.bashrc
 ```
 
 ### Gateway as a service (optional)

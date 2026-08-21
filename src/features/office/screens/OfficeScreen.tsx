@@ -251,7 +251,7 @@ const createDemoMainAgentSeed = (): {
 } => ({
   agentId: MAIN_AGENT_ID,
   name: "Main",
-  runtimeName: "Claw3D Demo",
+  runtimeName: "Claude3D Demo",
   identityName: "Main",
   sessionDisplayName: "Main",
   role: "assistant",
@@ -2410,7 +2410,7 @@ export function OfficeScreen({
       );
       if (!agent) return;
       const confirmed = window.confirm(
-        `Delete ${agent.name}? This removes the agent record from OpenClaw and clears its scheduled automations. Claw3D will not touch workspace files.`,
+        `Delete ${agent.name}? This removes the agent record from OpenClaw and clears its scheduled automations. Claude3D will not touch workspace files.`,
       );
       if (!confirmed) return;
 
@@ -4975,7 +4975,7 @@ export function OfficeScreen({
                   setKanbanInstallProgress({
                     active: true,
                     percent: 100,
-                    message: "Refreshing task-manager state in Claw3D.",
+                    message: "Refreshing task-manager state in Claude3D.",
                     error: null,
                   });
                   setKanbanInstallPromptOpen(false);

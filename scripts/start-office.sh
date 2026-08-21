@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# start-office — Start the InTheFlow Office: OpenClaw gateway + Studio app.
+# start-office — Start the Claude3D: OpenClaw gateway + Studio app.
 #
 # Setup (once):
-#   echo 'alias office="$HOME/random/intheflow-office/scripts/start-office.sh"' >> ~/.bashrc
+#   echo 'alias office="$HOME/Claude3D/scripts/start-office.sh"' >> ~/.bashrc
 #   source ~/.bashrc
 #
 # Then just run:  office
@@ -14,7 +14,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 OFFICE_DIR="$(cd -- "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
-LOG_DIR="/tmp/intheflow-office-logs"
+LOG_DIR="/tmp/claude3d-logs"
 mkdir -p "$LOG_DIR"
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; RED='\033[0;31m'; NC='\033[0m'

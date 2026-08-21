@@ -2,7 +2,7 @@
  * useOnboardingState — Tracks whether onboarding has been completed.
  *
  * Uses localStorage so the wizard only shows once per browser.
- * The key is scoped to the Claw3D app to avoid collisions.
+ * The key is scoped to the Claude3D app to avoid collisions.
  */
 import { useCallback, useEffect, useState } from "react";
 

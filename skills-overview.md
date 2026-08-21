@@ -1,6 +1,6 @@
-# Skills in OpenClaw + Claw3D
+# Skills in OpenClaw + Claude3D
 
-This document explains skills from first principles, how they work in the OpenClaw runtime, and how Claw3D currently exposes them in UX.
+This document explains skills from first principles, how they work in the OpenClaw runtime, and how Claude3D currently exposes them in UX.
 
 It is intended as design context for rethinking the Skills UX.
 
@@ -156,7 +156,7 @@ Important scope behavior:
 Security detail:
 - `skills.status` exposes config check satisfaction, not raw secret config values.
 
-## 10) Claw3D UX (current behavior)
+## 10) Claude3D UX (current behavior)
 
 ### 10.1 Route and navigation model
 

@@ -52,7 +52,7 @@ fi
 mkdir -p "$UNIT_DIR"
 cat > "$UNIT_PATH" <<UNIT
 [Unit]
-Description=OpenClaw Gateway (InTheFlow Office runtime)
+Description=OpenClaw Gateway (Claude3D runtime)
 Documentation=https://docs.openclaw.ai/
 After=network-online.target
 Wants=network-online.target

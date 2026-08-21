@@ -340,7 +340,7 @@ describe("claw3doctor core", () => {
       ],
     });
 
-    expect(report).toContain("Claw3Doctor");
+    expect(report).toContain("Claude3Doctor");
     expect(report).toContain("Selected profile:");
     expect(report).toContain("Configured profiles:");
     expect(report).toContain("Runtime profiles");
