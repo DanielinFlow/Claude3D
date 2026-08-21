@@ -1,16 +1,5 @@
 # Claude3D — A 3D Workspace for AI Agents
 
-> Fork of [Claw3D](https://github.com/iamlukethedev/Claw3D) (MIT) with the
-> visual/audio/conversation polish from
-> [Hermes3D](https://github.com/iamlukethedev/Hermes3D) ported in, the Hermes
-> runtime removed (Claude via OpenClaw only), and a two-floor setup: a
-> **Local** floor bound to the desktop OpenClaw Gateway and a **VPS** floor
-> bound to a remote gateway over Tailscale.
-> Setup: [`docs/claude3d-setup.md`](docs/claude3d-setup.md).
-> The upstream Claw3D README follows below (project references renamed).
-
-# Claude3D — A 3D Workspace for AI Agents
-
 <p align="center">
     <img src="assets/branding/claw3d-hero.png" alt="Claude3D" width="700">
 </p>
@@ -20,25 +9,53 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/iamlukethedev/Claw3D/actions/workflows/docker-publish.yml?query=branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/iamlukethedev/Claw3D/docker-publish.yml?branch=main&style=for-the-badge" alt="CI status"></a>
-  <a href="https://github.com/iamlukethedev/Claw3D/releases"><img src="https://img.shields.io/github/v/release/iamlukethedev/Claw3D?include_prereleases&style=for-the-badge" alt="GitHub release"></a>
-  <a href="https://discord.gg/UzwNn5Zkhr"><img src="https://img.shields.io/discord/1456350064065904867?label=Discord&logo=discord&logoColor=white&color=5865F2&style=for-the-badge" alt="Discord"></a>
-  <a href="https://x.com/iamlukethedev"><img src="https://img.shields.io/badge/Follow-%40iamlukethedev-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow on X"></a>
+  <a href="https://github.com/iamlukethedev/Claw3D"><img src="https://img.shields.io/badge/fork%20of-Claw3D-6E56CF?style=for-the-badge" alt="Fork of Claw3D"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
+  <a href="#unofficial-project--no-affiliation"><img src="https://img.shields.io/badge/status-unofficial%20personal%20fork-lightgrey?style=for-the-badge" alt="Unofficial personal fork"></a>
 </p>
+
+## Unofficial project — no affiliation
+
+Claude3D is an independent personal fork, maintained by
+[@DanielinFlow](https://github.com/DanielinFlow). It is **not** affiliated with,
+endorsed by, sponsored by, or maintained by any of the following:
+
+- **Anthropic.** "Claude" and "Anthropic" are trademarks of Anthropic, PBC. This
+  is not an Anthropic product and has no connection to Anthropic. The name only
+  reflects the models this office connects to.
+- **The Claw3D project.** Upstream is
+  [iamlukethedev/Claw3D](https://github.com/iamlukethedev/Claw3D) by
+  [LukeTheDev](https://github.com/iamlukethedev). Please do not file issues about
+  this fork on the upstream repository.
+- **The OpenClaw team.** OpenClaw is a separate project, and this repository is
+  not the official OpenClaw repository.
+
+## What this fork changes
+
+Forked from [Claw3D](https://github.com/iamlukethedev/Claw3D) (MIT). On top of
+upstream, this fork:
+
+- ports in the visual/audio/conversation polish from
+  [Hermes3D](https://github.com/iamlukethedev/Hermes3D)
+- **removes the Hermes runtime** — agents connect through OpenClaw gateways only
+- adds a two-floor setup: a **Local** floor bound to the desktop OpenClaw Gateway
+  and a **VPS** floor bound to a remote gateway over Tailscale
+- adds a one-command start script and a gateway systemd service
+
+Fork setup lives in [`docs/claude3d-setup.md`](docs/claude3d-setup.md). The rest
+of this README is upstream's, with project references renamed and fork-specific
+corrections applied.
+
+---
 
 **Claude3D** is a _3D virtual office for AI agents_ you run on your own infrastructure.
 Instead of watching automation through dashboards and logs, you walk through a live 3D office where your agents collaborate, review code, run standups, ship pull requests, and execute tasks side by side. The Gateway is just the control plane — the product is the office.
 
 If you want a personal, self-hosted workspace that turns your AI workforce into something you can actually _see_, this is it.
 
-Supported runtimes include: OpenClaw Gateway, Hermes, a direct HTTP `custom` runtime provider for orchestrator-backed stacks, and a built-in demo gateway for office exploration without a real agent framework.
+Supported runtimes in this fork: OpenClaw Gateway, a direct HTTP `custom` runtime provider for orchestrator-backed stacks, and a built-in demo gateway for office exploration without a real agent framework.
 
-[Website](https://www.claw3d.ai/) · [Vision](VISION.md) · [Architecture](ARCHITECTURE.md) · [Tutorial](TUTORIAL.md) · [Getting Started](#quick-start) · [Runtime Profiles](docs/runtime-profiles.md) · [Multi-Agent Beta](docs/multi-agent-beta.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Discord](https://discord.gg/UzwNn5Zkhr)
-
-> **Unofficial project.** Claude3D is an independent, community-driven project and is not affiliated with, endorsed by, or maintained by the OpenClaw team. OpenClaw is a separate project, and this repository is not the official OpenClaw repository.
-
-Built and maintained by **LukeTheDev**. Follow on X: [@iamlukethedev](https://x.com/iamlukethedev).
+[Fork Setup](docs/claude3d-setup.md) · [Vision](VISION.md) · [Architecture](ARCHITECTURE.md) · [Tutorial](TUTORIAL.md) · [Getting Started](#quick-start) · [Runtime Profiles](docs/runtime-profiles.md) · [Multi-Agent Beta](docs/multi-agent-beta.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Credits](#credits-and-license)
 
 ## What you can do with Claude3D
 
@@ -56,7 +73,6 @@ Claude3D is the visualization and interaction layer.
 Today it can sit on top of:
 
 - OpenClaw through the existing gateway flow
-- Hermes through the bundled WebSocket adapter
 - a direct HTTP `custom` runtime provider for orchestrator-backed stacks
 - a built-in demo gateway for office exploration without a real agent framework
 
@@ -101,12 +117,11 @@ Requirements:
 - npm 10+ recommended.
 - One of:
   - a working OpenClaw installation with a reachable Gateway URL and token
-  - Hermes with the bundled adapter
   - the built-in demo gateway for local exploration
 
 Prerequisite:
 
-- Claude3D does not install or build OpenClaw or Hermes for you.
+- Claude3D does not install or build OpenClaw for you.
 - Before starting Claude3D against a real backend, make sure your chosen runtime is already running and that you know the gateway URL and token Studio should use.
 - For a no-framework local office demo, run the bundled demo gateway instead.
 - If you need a full cross-machine setup guide (OpenClaw + Tailscale + Claude3D), follow [`TUTORIAL.md`](TUTORIAL.md).
@@ -114,15 +129,15 @@ Prerequisite:
 Run from source:
 
 ```bash
-git clone <your-public-repo-url> claw3d
-cd claw3d
+git clone https://github.com/DanielinFlow/Claude3D.git
+cd Claude3D
 npm install
 cp .env.example .env
 npm run dev
 ```
 
 Then open `http://localhost:3000` and configure the gateway URL and token in Studio.
-Studio now also persists the selected backend mode (`OpenClaw`, `Hermes`, `Demo`, `Local`, `Claude3D`, or `Custom`) and
+Studio now also persists the selected backend mode (`OpenClaw`, `Demo`, `Local`, `Claude3D`, or `Custom`) and
 shows the active backend reported by the connected gateway.
 
 ### Runtime profiles
@@ -156,11 +171,11 @@ Current direct-runtime expectations:
 The browser does not call that runtime directly. Claude3D proxies the
 `custom` provider through its own same-origin route at
 `/api/runtime/custom`, which avoids browser-side CORS problems and keeps
-the provider transport separate from the OpenClaw/Hermes gateway path.
+the provider transport separate from the OpenClaw gateway path.
 
 ### Demo mode
 
-If you only want to see the office and agent interactions without installing OpenClaw or Hermes:
+If you only want to see the office and agent interactions without installing OpenClaw:
 
 ```bash
 npm run demo-gateway
@@ -176,16 +191,7 @@ ws://localhost:18789
 This starts a mock local gateway with demo agents, streaming chat, session previews, and office presence.
 In the connect screen, choose `Demo backend`, then connect.
 
-### Hermes adapter
-
-If you want to use Hermes instead of OpenClaw:
-
-```bash
-npm run hermes-adapter
-npm run dev
-```
-
-See [`docs/hermes-gateway.md`](docs/hermes-gateway.md) for setup details and current scope.
+### OpenClaw gateway
 
 For a local gateway on the same machine, the usual upstream URL is:
 
@@ -193,7 +199,13 @@ For a local gateway on the same machine, the usual upstream URL is:
 ws://localhost:18789
 ```
 
-In the connect screen, choose `Hermes backend`, then connect.
+In the connect screen, choose `OpenClaw backend`, then connect. Per-floor
+gateway bindings for this fork are described in
+[`docs/claude3d-setup.md`](docs/claude3d-setup.md).
+
+> Upstream Claw3D also ships a Hermes WebSocket adapter. This fork removes it —
+> `npm run hermes-adapter`, the `hermes` runtime provider, and
+> `docs/hermes-gateway.md` do not exist here.
 
 ## How It Connects
 
@@ -269,8 +281,8 @@ Common environment variables:
 - `CUSTOM_RUNTIME_ALLOWLIST` restricts which hosts `/api/runtime/custom` may fetch. If unset, it falls back to `UPSTREAM_ALLOWLIST`.
 - `NEXT_PUBLIC_GATEWAY_URL` provides the default upstream gateway URL when Studio settings are empty. **Note:** this is a build-time variable — changes require `npm run build` to take effect.
 - `CLAW3D_GATEWAY_URL` and `CLAW3D_GATEWAY_TOKEN` provide a runtime alternative to `NEXT_PUBLIC_GATEWAY_URL` that takes effect on server restart without a rebuild.
-- `CLAW3D_GATEWAY_ADAPTER_TYPE` can pair with `CLAW3D_GATEWAY_URL` to mark those runtime defaults as `openclaw`, `hermes`, `demo`, `local`, `claw3d`, or `custom`.
-- If `CLAW3D_GATEWAY_URL` is not set, Studio can still surface local Hermes or demo adapter defaults from `HERMES_ADAPTER_PORT` / `DEMO_ADAPTER_PORT`.
+- `CLAW3D_GATEWAY_ADAPTER_TYPE` can pair with `CLAW3D_GATEWAY_URL` to mark those runtime defaults as `openclaw`, `demo`, `local`, `claw3d`, or `custom`.
+- If `CLAW3D_GATEWAY_URL` is not set, Studio can still surface the local demo adapter default from `DEMO_ADAPTER_PORT`.
 - OpenClaw file defaults still come from `~/.openclaw/openclaw.json` when present.
 - `OPENCLAW_STATE_DIR` and `OPENCLAW_CONFIG_PATH` override the default OpenClaw paths.
 - `OPENCLAW_GATEWAY_SSH_TARGET`, `OPENCLAW_GATEWAY_SSH_USER`, `OPENCLAW_GATEWAY_SSH_PORT`, and `OPENCLAW_GATEWAY_SSH_STRICT_HOST_KEY_CHECKING` support advanced gateway-host operations over SSH when needed.
@@ -281,7 +293,6 @@ See [`.env.example`](.env.example) for the full local development template.
 ## Scripts
 
 - `npm run dev` starts the Studio dev server.
-- `npm run hermes-adapter` starts the Hermes WebSocket adapter.
 - `npm run demo-gateway` starts the built-in mock gateway for demo mode.
 - `npm run build` builds the production Next.js app.
 - `npm run start` starts the production server.
@@ -305,7 +316,7 @@ See [`.env.example`](.env.example) for the full local development template.
 - [`ROADMAP.md`](ROADMAP.md): near-term priorities and contributor-friendly work areas.
 - [`docs/pi-chat-streaming.md`](docs/pi-chat-streaming.md): gateway runtime streaming and transcript rendering.
 - [`docs/permissions-sandboxing.md`](docs/permissions-sandboxing.md): Studio permissions and OpenClaw behavior.
-- [`docs/hermes-gateway.md`](docs/hermes-gateway.md): Hermes adapter setup, capabilities, and current limitations.
+- [`docs/claude3d-setup.md`](docs/claude3d-setup.md): fork-specific two-floor setup and daily start script.
 
 ## Current Limitations
 
@@ -319,7 +330,7 @@ If the UI loads but Connect fails, the problem is usually on the Studio -> Gatew
 
 - Confirm the upstream URL and token in Studio settings.
 - `EPROTO` or `wrong version number` usually means `wss://` was used against a non-TLS endpoint.
-- `INVALID_REQUEST` errors mentioning `minProtocol` or `maxProtocol` usually mean the gateway is too old for Claude3D protocol v3. Upgrade OpenClaw, use the Hermes adapter, or run `npm run demo-gateway`.
+- `INVALID_REQUEST` errors mentioning `minProtocol` or `maxProtocol` usually mean the gateway is too old for Claude3D protocol v3. Upgrade OpenClaw, or run `npm run demo-gateway`.
 - `401 Studio access token required` usually means `STUDIO_ACCESS_TOKEN` is enabled and the request is missing the expected `studio_access` cookie.
 - If `/api/runtime/custom` returns a blocked-host error in production, set `CUSTOM_RUNTIME_ALLOWLIST` or include the runtime host in `UPSTREAM_ALLOWLIST`.
 - Helpful proxy error codes include `studio.gateway_url_missing`, `studio.gateway_token_missing`, `studio.upstream_error`, and `studio.upstream_closed`.
@@ -358,10 +369,31 @@ For first-time SSH connections, Claude3D uses `StrictHostKeyChecking=accept-new`
 
 Keep pull requests focused, run `npm run lint`, `npm run typecheck`, and `npm run test` before opening a PR, and update docs when behavior or architecture changes.
 
+Changes that are **not** specific to this fork belong upstream — see
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the fork/upstream split and remote setup.
+
 ## AI Editing Guardrails
 
-If you use Cursor or another AI-assisted workflow, review the committed project guardrails in [`.cursor/rules/claw3d-project-guardrails.mdc`](.cursor/rules/claw3d-project-guardrails.mdc).
+Editing expectations for AI-assisted workflows live in [`AGENTS.md`](AGENTS.md),
+including the Claude3D-vs-OpenClaw boundary, code placement conventions,
+office-stack distinctions, and documentation/test update expectations.
 
-That rule file captures the shared editing expectations for this repository, including the Claude3D-vs-OpenClaw boundary, code placement conventions, office-stack distinctions, and documentation/test update expectations.
+Community expectations live in [`CODE_OF_CONDUCT.MD`](CODE_OF_CONDUCT.MD). Security reporting instructions live in [`SECURITY.md`](SECURITY.md).
 
-Community expectations live in [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Security reporting instructions live in [`SECURITY.md`](SECURITY.md).
+## Credits and license
+
+Claude3D is a fork of **[Claw3D](https://github.com/iamlukethedev/Claw3D)**,
+created and maintained by **LukeTheDev** —
+[GitHub](https://github.com/iamlukethedev) ·
+[claw3d.ai](https://www.claw3d.ai/) ·
+[Discord](https://discord.gg/UzwNn5Zkhr) ·
+[X](https://x.com/iamlukethedev). The visual, audio, and conversation polish is
+ported from his **[Hermes3D](https://github.com/iamlukethedev/Hermes3D)**. If you
+find this useful, the credit and any sponsorship belong upstream.
+
+The Discord and X links above are the **upstream Claw3D** community, not a support
+channel for this fork. Issues with this fork go to
+[this repository's issue tracker](https://github.com/DanielinFlow/Claude3D/issues).
+
+Licensed under the [MIT License](LICENSE), Copyright (c) 2026 Luke The Dev.
+Fork modifications are released under the same license.

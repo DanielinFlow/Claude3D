@@ -2,7 +2,37 @@
 
 Thanks for helping improve Claude3D.
 
-Please use GitHub Issues for bugs, feature requests, and questions about planned work.
+Please use [this repository's GitHub Issues](https://github.com/DanielinFlow/Claude3D/issues)
+for bugs, feature requests, and questions about planned work.
+
+## Fork or upstream?
+
+Claude3D is a personal fork of
+[iamlukethedev/Claw3D](https://github.com/iamlukethedev/Claw3D). Send your change
+to whichever repository actually owns it:
+
+| Change | Goes to |
+|---|---|
+| General improvements to the office, Studio, or runtime seam | **Upstream Claw3D** — open a PR there |
+| Two-floor setup, Hermes-runtime removal, start script, systemd unit, fork docs | **This fork** |
+
+Upstream's contribution rules (one PR = one topic, no compatibility breaks, discuss
+architectural changes first) are in [`VISION.md`](VISION.md) — follow them for
+anything you send upstream.
+
+### Tracking upstream
+
+This clone should carry an `upstream` remote so you can pull Claw3D changes and
+open upstream PRs from topic branches:
+
+```bash
+git remote add upstream https://github.com/iamlukethedev/Claw3D.git
+git fetch upstream
+git log --oneline HEAD..upstream/main   # what upstream has that we do not
+```
+
+Do not merge upstream blindly — this fork intentionally removes the Hermes
+runtime and pins the office to two OpenClaw floors.
 
 ## Before you start
 - Install OpenClaw and confirm the gateway runs locally.
@@ -13,7 +43,7 @@ Please use GitHub Issues for bugs, feature requests, and questions about planned
 
 ## Local setup
 ```bash
-git clone https://github.com/iamlukethedev/Claw3D.git
+git clone https://github.com/DanielinFlow/Claude3D.git
 cd Claude3D
 npm install
 cp .env.example .env
