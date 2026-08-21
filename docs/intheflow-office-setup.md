@@ -41,6 +41,44 @@ switching floors reconnects against the right gateway with the right token.
    on the VPS the same way. After this one-time step, floor switching restores
    each floor's gateway and token automatically.
 
+## Daily start
+
+Two processes need to be alive: the OpenClaw gateway and the Studio app. One
+command handles both:
+
+```bash
+./scripts/start-office.sh
+```
+
+It reuses whatever is already running (gateway, app), installs dependencies on
+first run, picks another port if 3000 is taken, waits until the office answers,
+and opens the browser. Logs land in `/tmp/intheflow-office-logs/`.
+
+Handy as an alias:
+
+```bash
+echo 'alias office="$HOME/random/intheflow-office/scripts/start-office.sh"' >> ~/.bashrc
+```
+
+### Gateway as a service (optional)
+
+To stop babysitting a terminal for the gateway, install it as a systemd user
+service — it then starts at login and restarts on failure:
+
+```bash
+./scripts/install-gateway-service.sh
+```
+
+Stop any hand-started gateway first, or the service cannot bind the port.
+
+```
+Status   systemctl --user status openclaw-gateway
+Logs     journalctl --user -u openclaw-gateway -f
+Remove   ./scripts/install-gateway-service.sh --uninstall
+```
+
+To keep it running when you are not logged in: `sudo loginctl enable-linger $USER`.
+
 ## Ported polish (from Hermes3D)
 
 - Cinematic rendering: perspective camera, HDRI image-based lighting, sun rig,
