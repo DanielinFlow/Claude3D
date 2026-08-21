@@ -152,7 +152,7 @@ This host is what Claude3D will use as `wss://<gateway-host>.<tailnet>.ts.net`.
 On **Machine B**:
 
 ```bash
-git clone https://github.com/iamlukethedev/Claw3D.git claw3d
+git clone https://github.com/DanielinFlow/Claude3D.git claude3d
 cd claw3d
 npm install
 cp .env.example .env
